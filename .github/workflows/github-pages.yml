@@ -3,6 +3,8 @@ name: Deploy Storybook to GitHub Pages
 on:
   push:
     branches: [main]
+    paths:
+      - "packages/**"
 
 permissions:
   contents: read
