@@ -36,6 +36,11 @@ jobs:
           cd packages/ai-ui-kit
           npm ci
 
+      - name: Install Playwright browsers
+        run: |
+          cd packages/ai-ui-kit
+          npx playwright install --with-deps
+
       - name: Run tests
         run: |
           cd packages/ai-ui-kit
