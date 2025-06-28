@@ -186,9 +186,11 @@ export function createFileUpload(
 	status: 'uploading' | 'uploaded' | 'error' = 'uploading',
 	progress: number = 0
 ): ValidationResult<FileUpload> {
-	const uploadData = {
-		id: id || crypto.randomUUID(),
-		file,
+    const uploadData = {
+        id: id || (typeof crypto !== 'undefined' && crypto.randomUUID ? 
+            crypto.randomUUID() : 
+            `upload-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`),
+        file,
 		status,
 		progress: Math.max(0, Math.min(100, progress))
 	};
