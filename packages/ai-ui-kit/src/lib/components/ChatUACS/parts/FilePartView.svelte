@@ -37,6 +37,10 @@
           }
           const byteArray = new Uint8Array(byteNumbers);
           const blob = new Blob([byteArray], { type: part.media_type || 'application/octet-stream' });
+          // Revoke previous blob URL if it exists
+          if (downloadUrl && downloadUrl.startsWith('blob:')) {
+            URL.revokeObjectURL(downloadUrl);
+          }
           downloadUrl = URL.createObjectURL(blob);
           // Note: Blob URLs should be revoked when no longer needed to free resources,
           // but for a download link, it's generally fine until page unload or component destruction.
