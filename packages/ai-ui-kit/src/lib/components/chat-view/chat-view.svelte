@@ -212,7 +212,12 @@
 			clearTimeout(typingTimeout);
 			typingTimeout = null;
 		}
-	}
+ }
+
+ // Add cleanup in onDestroy
+ onDestroy(() => {
+ 	stopTyping();
+ });
 
 	function toggleRecording() {
 		isRecording = !isRecording;
