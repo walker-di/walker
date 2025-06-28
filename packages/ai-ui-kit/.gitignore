@@ -1,5 +1,8 @@
 test-results
+playwright-report
+playwright-results.json
 node_modules
+coverage
 
 # Output
 .output
