@@ -1,14 +1,14 @@
 <script lang="ts">
-	import ChatView from '$lib/components/chat-view.svelte';
-	import type { ChatMessage } from '$lib/components/chat-view.svelte';
+	import ChatView from "$lib/components/chat-view/chat-view.svelte";
+	import type { ChatMessage } from "$lib/components/chat-view/types/chat.js";
 
 	let messages: ChatMessage[] = [
 		{
 			id: "1",
 			role: "assistant",
 			content: "Hello! 😊\n\nHow can I help you today?",
-			timestamp: new Date()
-		}
+			timestamp: new Date(),
+		},
 	];
 
 	function handleSendMessage(message: string) {
@@ -17,7 +17,7 @@
 			id: Date.now().toString(),
 			role: "user",
 			content: message,
-			timestamp: new Date()
+			timestamp: new Date(),
 		};
 		messages = [...messages, userMessage];
 
@@ -27,54 +27,54 @@
 				id: (Date.now() + 1).toString(),
 				role: "assistant",
 				content: `You said: "${message}"\n\nThis is a demo response from the AI assistant. In a real implementation, this would be connected to an actual AI service.`,
-				timestamp: new Date()
+				timestamp: new Date(),
 			};
 			messages = [...messages, aiMessage];
 		}, 1000);
 	}
 
 	function handleCopyMessage(messageId: string) {
-		const message = messages.find(m => m.id === messageId);
+		const message = messages.find((m) => m.id === messageId);
 		if (message) {
 			navigator.clipboard.writeText(message.content);
-			console.log('Message copied to clipboard');
+			console.log("Message copied to clipboard");
 		}
 	}
 
 	function handleThumbsUp(messageId: string) {
-		console.log('Thumbs up for message:', messageId);
+		console.log("Thumbs up for message:", messageId);
 	}
 
 	function handleThumbsDown(messageId: string) {
-		console.log('Thumbs down for message:', messageId);
+		console.log("Thumbs down for message:", messageId);
 	}
 
 	function handlePlayAudio(messageId: string) {
-		console.log('Play audio for message:', messageId);
+		console.log("Play audio for message:", messageId);
 	}
 
 	function handleRegenerate(messageId: string) {
-		console.log('Regenerate message:', messageId);
+		console.log("Regenerate message:", messageId);
 	}
 
 	function handleDownload(messageId: string) {
-		console.log('Download message:', messageId);
+		console.log("Download message:", messageId);
 	}
 
 	function handleToolsClick() {
-		console.log('Tools clicked');
+		console.log("Tools clicked");
 	}
 
 	function handleCallClick() {
-		console.log('Call clicked');
+		console.log("Call clicked");
 	}
 
 	function handleSearchClick() {
-		console.log('Search clicked');
+		console.log("Search clicked");
 	}
 
 	function handleMoreClick() {
-		console.log('More clicked');
+		console.log("More clicked");
 	}
 </script>
 
@@ -89,7 +89,7 @@
 		participants={[
 			{ id: "1", name: "Fernando", isOnline: true },
 			{ id: "2", name: "~Benko", isOnline: true },
-			{ id: "3", name: "Você", isOnline: true }
+			{ id: "3", name: "Você", isOnline: true },
 		]}
 		placeholder="Ask anything"
 		showTools={true}

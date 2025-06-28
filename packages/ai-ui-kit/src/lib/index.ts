@@ -1,5 +1,5 @@
 // Reexport your entry components here
-export { default as ChatView } from './components/chat-view.svelte';
+export { default as ChatView } from './components/chat-view/chat-view.svelte';
 
 // Re-export specific UI components to avoid conflicts
 export { Button, buttonVariants } from './components/ui/button/index.js';

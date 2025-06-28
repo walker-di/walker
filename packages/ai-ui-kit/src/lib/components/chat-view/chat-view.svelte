@@ -3,7 +3,14 @@
 	import { Textarea } from "$lib/components/ui/textarea/index.js";
 	import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
 	import { Avatar, AvatarFallback } from "$lib/components/ui/avatar/index.js";
-	
+
+	// Types
+	import type {
+		ChatMessage,
+		ChatParticipant,
+		ChatViewProps,
+	} from "$lib/components/chat-view/types/index.js";
+
 	// Lucide icons
 	import Copy from "lucide-svelte/icons/copy";
 	import ThumbsUp from "lucide-svelte/icons/thumbs-up";
@@ -20,41 +27,6 @@
 	import Search from "lucide-svelte/icons/search";
 	import MoreVertical from "lucide-svelte/icons/more-vertical";
 
-	export interface ChatMessage {
-		id: string;
-		role: "user" | "assistant";
-		content: string;
-		timestamp?: Date;
-	}
-
-	export interface ChatParticipant {
-		id: string;
-		name: string;
-		avatar?: string;
-		isOnline?: boolean;
-		isTyping?: boolean;
-	}
-
-	export interface ChatViewProps {
-		messages?: ChatMessage[];
-		placeholder?: string;
-		disabled?: boolean;
-		showTools?: boolean;
-		chatTitle?: string;
-		participants?: ChatParticipant[];
-		onSendMessage?: (message: string) => void;
-		onCopyMessage?: (messageId: string) => void;
-		onThumbsUp?: (messageId: string) => void;
-		onThumbsDown?: (messageId: string) => void;
-		onPlayAudio?: (messageId: string) => void;
-		onRegenerate?: (messageId: string) => void;
-		onDownload?: (messageId: string) => void;
-		onToolsClick?: () => void;
-		onCallClick?: () => void;
-		onSearchClick?: () => void;
-		onMoreClick?: () => void;
-	}
-
 	let {
 		messages = [],
 		placeholder = "Ask anything",
@@ -64,7 +36,7 @@
 		participants = [
 			{ id: "1", name: "Fernando", isOnline: true },
 			{ id: "2", name: "~Benko", isOnline: true },
-			{ id: "3", name: "Você", isOnline: true }
+			{ id: "3", name: "Você", isOnline: true },
 		],
 		onSendMessage,
 		onCopyMessage,
@@ -76,7 +48,7 @@
 		onToolsClick,
 		onCallClick,
 		onSearchClick,
-		onMoreClick
+		onMoreClick,
 	}: ChatViewProps = $props();
 
 	let inputValue = $state("");
@@ -106,8 +78,8 @@
 			id: "1",
 			role: "assistant",
 			content: "Hello! 😊\n\nHow can I help you today?",
-			timestamp: new Date()
-		}
+			timestamp: new Date(),
+		},
 	];
 
 	const displayMessages = messages.length > 0 ? messages : sampleMessages;
@@ -115,11 +87,17 @@
 
 <div class="flex h-screen flex-col bg-gray-50 dark:bg-gray-900 text-foreground">
 	<!-- Header -->
-	<div class="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 bg-gray-900 text-white p-4 shadow-sm">
+	<div
+		class="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 bg-gray-900 text-white p-4 shadow-sm"
+	>
 		<div class="flex items-center gap-3">
 			<!-- Chat Icon/Logo -->
-			<div class="flex items-center justify-center w-8 h-8 bg-white rounded-full">
-				<div class="w-5 h-5 bg-gray-900 rounded-full flex items-center justify-center">
+			<div
+				class="flex items-center justify-center w-8 h-8 bg-white rounded-full"
+			>
+				<div
+					class="w-5 h-5 bg-gray-900 rounded-full flex items-center justify-center"
+				>
 					<div class="w-2 h-2 bg-white rounded-full"></div>
 				</div>
 			</div>
@@ -177,44 +155,60 @@
 		<ScrollArea class="h-full">
 			<div class="space-y-4 p-6">
 				{#each displayMessages as message (message.id)}
-					<div class="flex gap-3 {message.role === 'user' ? 'justify-end' : 'justify-start'}">
+					<div
+						class="flex gap-3 {message.role === 'user'
+							? 'justify-end'
+							: 'justify-start'}"
+					>
 						{#if message.role === "assistant"}
 							<Avatar class="h-8 w-8 shrink-0 mt-1">
-								<AvatarFallback class="bg-blue-600 text-white text-sm">AI</AvatarFallback>
+								<AvatarFallback class="bg-blue-600 text-white text-sm"
+									>AI</AvatarFallback
+								>
 							</Avatar>
 						{/if}
 
 						<div class="flex flex-col space-y-2 max-w-[70%]">
 							<!-- Message Bubble -->
 							<div class="relative group">
-								<div class="
+								<div
+									class="
 									{message.role === 'user'
 										? 'bg-green-500 text-white rounded-2xl rounded-br-md'
-										: 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-2xl rounded-bl-md border border-gray-200 dark:border-gray-700'
-									}
+										: 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-2xl rounded-bl-md border border-gray-200 dark:border-gray-700'}
 									px-4 py-3 shadow-sm
-								">
+								"
+								>
 									<div class="text-sm leading-relaxed whitespace-pre-wrap">
-										{@html message.content.replace(/\n/g, '<br>')}
+										{@html message.content.replace(/\n/g, "<br>")}
 									</div>
 
 									{#if message.timestamp}
 										<div class="text-xs opacity-70 mt-1 text-right">
-											{message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+											{message.timestamp.toLocaleTimeString([], {
+												hour: "2-digit",
+												minute: "2-digit",
+											})}
 										</div>
 									{/if}
 								</div>
 
 								<!-- Message tail/pointer -->
-								{#if message.role === 'user'}
-									<div class="absolute -bottom-0 -right-0 w-0 h-0 border-l-[8px] border-l-green-500 border-t-[8px] border-t-transparent"></div>
+								{#if message.role === "user"}
+									<div
+										class="absolute -bottom-0 -right-0 w-0 h-0 border-l-[8px] border-l-green-500 border-t-[8px] border-t-transparent"
+									></div>
 								{:else}
-									<div class="absolute -bottom-0 -left-0 w-0 h-0 border-r-[8px] border-r-white dark:border-r-gray-800 border-t-[8px] border-t-transparent"></div>
+									<div
+										class="absolute -bottom-0 -left-0 w-0 h-0 border-r-[8px] border-r-white dark:border-r-gray-800 border-t-[8px] border-t-transparent"
+									></div>
 								{/if}
 							</div>
 
 							{#if message.role === "assistant"}
-								<div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 ml-2">
+								<div
+									class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 ml-2"
+								>
 									<Button
 										variant="ghost"
 										size="icon"
@@ -269,7 +263,9 @@
 
 						{#if message.role === "user"}
 							<Avatar class="h-8 w-8 shrink-0 mt-1">
-								<AvatarFallback class="bg-green-600 text-white text-sm">U</AvatarFallback>
+								<AvatarFallback class="bg-green-600 text-white text-sm"
+									>U</AvatarFallback
+								>
 							</Avatar>
 						{/if}
 					</div>
@@ -292,7 +288,7 @@
 						<Plus class="h-5 w-5" />
 					</Button>
 				{/if}
-				
+
 				<div class="relative flex-1">
 					<Textarea
 						bind:value={inputValue}
@@ -302,7 +298,7 @@
 						class="min-h-[52px] resize-none pr-20"
 						rows={1}
 					/>
-					
+
 					<div class="absolute bottom-2 right-2 flex items-center gap-1">
 						{#if showTools}
 							<Button
@@ -340,7 +336,7 @@
 					</div>
 				</div>
 			</div>
-			
+
 			<div class="mt-2 text-center text-xs text-gray-500">
 				ChatGPT can make mistakes. Check important info.
 			</div>

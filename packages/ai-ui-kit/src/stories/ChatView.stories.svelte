@@ -1,6 +1,6 @@
 <script module>
 	import { defineMeta } from '@storybook/addon-svelte-csf';
-	import ChatView from '../lib/components/chat-view.svelte';
+	import ChatView from '../lib/components/chat-view/chat-view.svelte';
 	import { fn } from 'storybook/test';
 
 	const { Story } = defineMeta({
