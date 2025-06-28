@@ -4,12 +4,42 @@
 	import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
 	import { Avatar, AvatarFallback } from "$lib/components/ui/avatar/index.js";
 
+	// New components
+	import FileUpload from "./components/file-upload.svelte";
+	import ImagePreview from "./components/image-preview.svelte";
+	import DocumentPreview from "./components/document-preview.svelte";
+	import CodeCanvas from "./components/code-canvas.svelte";
+	import TypingIndicator from "./components/typing-indicator.svelte";
+	import MessageThread from "./components/message-thread.svelte";
+	import ConversationManager from "./components/conversation-manager.svelte";
+
 	// Types
 	import type {
 		ChatMessage,
 		ChatParticipant,
 		ChatViewProps,
-	} from "$lib/components/chat-view/types/index.js";
+		ContentPart,
+		FileUpload as FileUploadType,
+	} from "$lib/components/chat-view/schemas/chat.js";
+
+	// Validation
+	import {
+		validateChatMessage,
+		sanitizeAndValidateUserInput,
+		createValidatedMessage,
+		type ValidationResult
+	} from "$lib/components/chat-view/utils/validation.js";
+
+	// Utils
+	import {
+		isMultiModalMessage,
+		getMessageText,
+		getContentPartsByType,
+		hasContentType,
+		fileToContentPart,
+		combineContentParts,
+		createTextPart
+	} from "./utils/content-utils.js";
 
 	// Lucide icons
 	import Copy from "lucide-svelte/icons/copy";
@@ -26,6 +56,7 @@
 	import Phone from "lucide-svelte/icons/phone";
 	import Search from "lucide-svelte/icons/search";
 	import MoreVertical from "lucide-svelte/icons/more-vertical";
+	import Paperclip from "lucide-svelte/icons/paperclip";
 
 	let {
 		messages = [],
@@ -38,13 +69,46 @@
 			{ id: "2", name: "~Benko", isOnline: true },
 			{ id: "3", name: "Você", isOnline: true },
 		],
+		threads = [],
+		activeThreadId,
+		typingIndicators = [],
+		fileUploads = [],
+		maxFileSize = 10 * 1024 * 1024, // 10MB
+		acceptedFileTypes = ["image/*", "video/*", "audio/*", "text/*", ".pdf", ".doc", ".docx"],
+		enableThreading = false,
+		enableFileUpload = true,
+		enableCodeCanvas = true,
+		enableExport = true,
+
+		// Message handlers
 		onSendMessage,
+		onSendFiles,
 		onCopyMessage,
 		onThumbsUp,
 		onThumbsDown,
 		onPlayAudio,
 		onRegenerate,
 		onDownload,
+
+		// Threading handlers
+		onCreateThread,
+		onSwitchThread,
+		onDeleteThread,
+
+		// File handlers
+		onFileUpload,
+		onFileRemove,
+		onFilePreview,
+
+		// Export/Import handlers
+		onExportConversation,
+		onImportConversation,
+
+		// Real-time handlers
+		onTypingStart,
+		onTypingStop,
+
+		// UI handlers
 		onToolsClick,
 		onCallClick,
 		onSearchClick,
@@ -53,12 +117,67 @@
 
 	let inputValue = $state("");
 	let isRecording = $state(false);
+	let showFileUpload = $state(false);
+	let pendingFiles = $state<FileUploadType[]>([]);
+	let isTyping = $state(false);
+	let typingTimeout: number | null = null;
 
 	function handleSend() {
-		if (inputValue.trim() && !disabled) {
-			onSendMessage?.(inputValue.trim());
-			inputValue = "";
+		if (!inputValue.trim() && pendingFiles.length === 0) return;
+		if (disabled) return;
+
+		// Validate and sanitize user input
+		if (inputValue.trim()) {
+			const inputValidation = sanitizeAndValidateUserInput(inputValue);
+			if (!inputValidation.success) {
+				console.error('Input validation failed:', inputValidation.errors);
+				// In a real app, show user-friendly error message
+				return;
+			}
 		}
+
+		const contentParts: ContentPart[] = [];
+
+		// Add text content if present
+		if (inputValue.trim()) {
+			contentParts.push(createTextPart(inputValue.trim()));
+		}
+
+		// Add file content parts
+		if (pendingFiles.length > 0) {
+			// In a real implementation, you'd convert files to content parts
+			// For now, we'll handle this through the onSendFiles callback
+			if (onSendFiles) {
+				onSendFiles(pendingFiles.map(f => f.file));
+			}
+		}
+
+		// Validate message before sending
+		if (contentParts.length > 0) {
+			const messageData = {
+				id: crypto.randomUUID(),
+				role: 'user' as const,
+				content: contentParts,
+				timestamp: new Date()
+			};
+
+			const messageValidation = validateChatMessage(messageData);
+			if (messageValidation.success) {
+				onSendMessage?.(contentParts);
+			} else {
+				console.error('Message validation failed:', messageValidation.errors);
+				// In a real app, show user-friendly error message
+				return;
+			}
+		} else if (inputValue.trim()) {
+			onSendMessage?.(inputValue.trim());
+		}
+
+		// Clear input and files
+		inputValue = "";
+		pendingFiles = [];
+		showFileUpload = false;
+		stopTyping();
 	}
 
 	function handleKeydown(event: KeyboardEvent) {
@@ -68,8 +187,90 @@
 		}
 	}
 
+	function handleInput() {
+		if (!isTyping) {
+			isTyping = true;
+			onTypingStart?.();
+		}
+
+		// Reset typing timeout
+		if (typingTimeout) {
+			clearTimeout(typingTimeout);
+		}
+
+		typingTimeout = setTimeout(() => {
+			stopTyping();
+		}, 2000);
+	}
+
+	function stopTyping() {
+		if (isTyping) {
+			isTyping = false;
+			onTypingStop?.();
+		}
+		if (typingTimeout) {
+			clearTimeout(typingTimeout);
+			typingTimeout = null;
+		}
+	}
+
 	function toggleRecording() {
 		isRecording = !isRecording;
+	}
+
+	function handleFileSelect(files: File[]) {
+		const newUploads: FileUploadType[] = files.map(file => ({
+			id: crypto.randomUUID(),
+			file,
+			status: 'uploading',
+			progress: 0
+		}));
+
+		pendingFiles = [...pendingFiles, ...newUploads];
+
+		// Simulate upload progress
+		newUploads.forEach(upload => {
+			simulateUpload(upload);
+		});
+	}
+
+	function simulateUpload(upload: FileUploadType) {
+		const interval = setInterval(() => {
+			const uploadIndex = pendingFiles.findIndex(f => f.id === upload.id);
+			if (uploadIndex === -1) {
+				clearInterval(interval);
+				return;
+			}
+
+			pendingFiles[uploadIndex].progress += 10;
+
+			if (pendingFiles[uploadIndex].progress >= 100) {
+				pendingFiles[uploadIndex].status = 'uploaded';
+				pendingFiles[uploadIndex].progress = 100;
+				clearInterval(interval);
+
+				// Call upload handler if provided
+				if (onFileUpload) {
+					onFileUpload(upload.file).then(result => {
+						const index = pendingFiles.findIndex(f => f.id === upload.id);
+						if (index !== -1) {
+							pendingFiles[index] = result;
+						}
+					}).catch(() => {
+						const index = pendingFiles.findIndex(f => f.id === upload.id);
+						if (index !== -1) {
+							pendingFiles[index].status = 'error';
+							pendingFiles[index].error = 'Upload failed';
+						}
+					});
+				}
+			}
+		}, 200);
+	}
+
+	function handleFileRemove(fileId: string) {
+		pendingFiles = pendingFiles.filter(f => f.id !== fileId);
+		onFileRemove?.(fileId);
 	}
 
 	// Sample messages for demo
@@ -85,7 +286,21 @@
 	const displayMessages = messages.length > 0 ? messages : sampleMessages;
 </script>
 
-<div class="flex h-screen flex-col bg-gray-50 dark:bg-gray-900 text-foreground">
+<div class="flex h-screen bg-gray-50 dark:bg-gray-900 text-foreground">
+	<!-- Threading Sidebar -->
+	{#if enableThreading && threads.length > 0}
+		<MessageThread
+			{threads}
+			{activeThreadId}
+			{messages}
+			{onCreateThread}
+			{onSwitchThread}
+			{onDeleteThread}
+		/>
+	{/if}
+
+	<!-- Main Chat Area -->
+	<div class="flex flex-col flex-1 min-w-0">
 	<!-- Header -->
 	<div
 		class="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 bg-gray-900 text-white p-4 shadow-sm"
@@ -121,6 +336,17 @@
 		</div>
 
 		<div class="flex items-center gap-2">
+			{#if enableExport}
+				<ConversationManager
+					{messages}
+					{participants}
+					{threads}
+					conversationTitle={chatTitle}
+					{onExportConversation}
+					{onImportConversation}
+				/>
+			{/if}
+
 			<Button
 				variant="ghost"
 				size="icon"
@@ -169,46 +395,84 @@
 						{/if}
 
 						<div class="flex flex-col space-y-2 max-w-[70%]">
-							<!-- Message Bubble -->
-							<div class="relative group">
-								<div
-									class="
-									{message.role === 'user'
-										? 'bg-green-500 text-white rounded-2xl rounded-br-md'
-										: 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-2xl rounded-bl-md border border-gray-200 dark:border-gray-700'}
-									px-4 py-3 shadow-sm
-								"
-								>
-									<div class="text-sm leading-relaxed whitespace-pre-wrap">
-										{@html message.content.replace(/\n/g, "<br>")}
-									</div>
-
-									{#if message.timestamp}
-										<div class="text-xs opacity-70 mt-1 text-right">
-											{message.timestamp.toLocaleTimeString([], {
-												hour: "2-digit",
-												minute: "2-digit",
-											})}
+							<!-- Multi-modal Content -->
+							{#if isMultiModalMessage(message)}
+								{#each message.content as part, index}
+									{#if part.type === 'text'}
+										<!-- Text Content -->
+										<div class="relative group">
+											<div
+												class="
+												{message.role === 'user'
+													? 'bg-green-500 text-white rounded-2xl rounded-br-md'
+													: 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-2xl rounded-bl-md border border-gray-200 dark:border-gray-700'}
+												px-4 py-3 shadow-sm
+											"
+											>
+												<div class="text-sm leading-relaxed whitespace-pre-wrap">
+													{@html part.text.replace(/\n/g, "<br>")}
+												</div>
+											</div>
 										</div>
+									{:else if part.type === 'image'}
+										<!-- Image Content -->
+										<ImagePreview
+											image={part}
+											showControls={true}
+											showMetadata={false}
+											onDownload={() => onDownload?.(message.id)}
+										/>
+									{:else if part.type === 'file'}
+										<!-- Document Content -->
+										<DocumentPreview
+											document={part}
+											showControls={true}
+											showMetadata={true}
+											onDownload={() => onDownload?.(message.id)}
+											onPreview={() => onFilePreview?.(part.source.file_id || '')}
+										/>
+									{:else if part.type === 'code' && enableCodeCanvas}
+										<!-- Code Content -->
+										<CodeCanvas
+											code={part}
+											editable={part.editable}
+											showLineNumbers={true}
+										/>
 									{/if}
+								{/each}
+							{:else}
+								<!-- Legacy Text Content -->
+								<div class="relative group">
+									<div
+										class="
+										{message.role === 'user'
+											? 'bg-green-500 text-white rounded-2xl rounded-br-md'
+											: 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-2xl rounded-bl-md border border-gray-200 dark:border-gray-700'}
+										px-4 py-3 shadow-sm
+									"
+									>
+										<div class="text-sm leading-relaxed whitespace-pre-wrap">
+											{@html message.content.replace(/\n/g, "<br>")}
+										</div>
+									</div>
 								</div>
+							{/if}
 
-								<!-- Message tail/pointer -->
-								{#if message.role === "user"}
-									<div
-										class="absolute -bottom-0 -right-0 w-0 h-0 border-l-[8px] border-l-green-500 border-t-[8px] border-t-transparent"
-									></div>
-								{:else}
-									<div
-										class="absolute -bottom-0 -left-0 w-0 h-0 border-r-[8px] border-r-white dark:border-r-gray-800 border-t-[8px] border-t-transparent"
-									></div>
-								{/if}
-							</div>
+							<!-- Timestamp -->
+							{#if message.timestamp}
+								<div class="text-xs opacity-70 text-right px-2">
+									{message.timestamp.toLocaleTimeString([], {
+										hour: "2-digit",
+										minute: "2-digit",
+									})}
+								</div>
+							{/if}
+						</div>
 
-							{#if message.role === "assistant"}
-								<div
-									class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 ml-2"
-								>
+						{#if message.role === "assistant"}
+							<div
+								class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 ml-2"
+							>
 									<Button
 										variant="ghost"
 										size="icon"
@@ -259,7 +523,6 @@
 									</Button>
 								</div>
 							{/if}
-						</div>
 
 						{#if message.role === "user"}
 							<Avatar class="h-8 w-8 shrink-0 mt-1">
@@ -270,72 +533,108 @@
 						{/if}
 					</div>
 				{/each}
+
+				<!-- Typing Indicators -->
+				{#if typingIndicators.length > 0}
+					<TypingIndicator indicators={typingIndicators} showAvatars={true} />
+				{/if}
 			</div>
 		</ScrollArea>
 	</div>
 
 	<!-- Input Area -->
-	<div class="border-t border-border p-4">
-		<div class="mx-auto max-w-4xl">
-			<div class="relative flex items-end gap-2">
-				{#if showTools}
-					<Button
-						variant="ghost"
-						size="icon"
-						class="mb-2 h-10 w-10 shrink-0"
-						onclick={onToolsClick}
-					>
-						<Plus class="h-5 w-5" />
-					</Button>
-				{/if}
+	<div class="border-t border-border">
+		<!-- File Upload Area -->
+		{#if enableFileUpload && (showFileUpload || pendingFiles.length > 0)}
+			<div class="p-4 border-b border-gray-200 dark:border-gray-700">
+				<FileUpload
+					files={pendingFiles}
+					{maxFileSize}
+					{acceptedFileTypes}
+					{disabled}
+					onFileSelect={handleFileSelect}
+					onFileRemove={handleFileRemove}
+					onFilePreview={onFilePreview}
+				/>
+			</div>
+		{/if}
 
-				<div class="relative flex-1">
-					<Textarea
-						bind:value={inputValue}
-						{placeholder}
-						{disabled}
-						onkeydown={handleKeydown}
-						class="min-h-[52px] resize-none pr-20"
-						rows={1}
-					/>
+		<div class="p-4">
+			<div class="mx-auto max-w-4xl">
+				<div class="relative flex items-end gap-2">
+					{#if showTools}
+						<Button
+							variant="ghost"
+							size="icon"
+							class="mb-2 h-10 w-10 shrink-0"
+							onclick={onToolsClick}
+						>
+							<Plus class="h-5 w-5" />
+						</Button>
+					{/if}
 
-					<div class="absolute bottom-2 right-2 flex items-center gap-1">
-						{#if showTools}
+					<div class="relative flex-1">
+						<Textarea
+							bind:value={inputValue}
+							{placeholder}
+							{disabled}
+							onkeydown={handleKeydown}
+							oninput={handleInput}
+							class="min-h-[52px] resize-none pr-32"
+							rows={1}
+						/>
+
+						<div class="absolute bottom-2 right-2 flex items-center gap-1">
+							{#if enableFileUpload}
+								<Button
+									variant="ghost"
+									size="icon"
+									class="h-8 w-8"
+									onclick={() => showFileUpload = !showFileUpload}
+									title="Attach files"
+								>
+									<Paperclip class="h-4 w-4" />
+								</Button>
+							{/if}
+
+							{#if showTools}
+								<Button
+									variant="ghost"
+									size="icon"
+									class="h-8 w-8"
+									onclick={onToolsClick}
+								>
+									<Settings class="h-4 w-4" />
+								</Button>
+							{/if}
+
 							<Button
 								variant="ghost"
 								size="icon"
 								class="h-8 w-8"
-								onclick={onToolsClick}
+								onclick={toggleRecording}
 							>
-								<Settings class="h-4 w-4" />
+								{#if isRecording}
+									<MicOff class="h-4 w-4 text-red-400" />
+								{:else}
+									<Mic class="h-4 w-4" />
+								{/if}
 							</Button>
-						{/if}
 
-						<Button
-							variant="ghost"
-							size="icon"
-							class="h-8 w-8"
-							onclick={toggleRecording}
-						>
-							{#if isRecording}
-								<MicOff class="h-4 w-4 text-red-400" />
-							{:else}
-								<Mic class="h-4 w-4" />
-							{/if}
-						</Button>
-
-						<Button
-							variant="ghost"
-							size="icon"
-							class="h-8 w-8"
-							onclick={handleSend}
-							disabled={!inputValue.trim() || disabled}
-						>
-							<Send class="h-4 w-4" />
-						</Button>
+							<Button
+								variant="ghost"
+								size="icon"
+								class="h-8 w-8"
+								onclick={handleSend}
+								disabled={(!inputValue.trim() && pendingFiles.length === 0) || disabled}
+							>
+								<Send class="h-4 w-4" />
+							</Button>
+						</div>
 					</div>
 				</div>
 			</div>
+		</div>
 
 			<div class="mt-2 text-center text-xs text-gray-500">
 				ChatGPT can make mistakes. Check important info.

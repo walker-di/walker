@@ -1,24 +1,92 @@
 <script lang="ts">
 	import ChatView from "$lib/components/chat-view/chat-view.svelte";
-	import type { ChatMessage } from "$lib/components/chat-view/types/chat.js";
+	import type { ChatMessage, ContentPart } from "$lib/components/chat-view/schemas/chat.js";
+	import {
+		validateChatMessage,
+		createValidatedMessage,
+		formatValidationErrors
+	} from "$lib/components/chat-view/utils/validation.js";
 
-	let messages: ChatMessage[] = [
+	let messages = $state<ChatMessage[]>([
 		{
 			id: "1",
 			role: "assistant",
-			content: "Hello! 😊\n\nHow can I help you today?",
+			content: [
+				{
+					type: "text",
+					text: "Hello! 😊\n\nWelcome to the enhanced AI Chat Interface! I now support:"
+				},
+				{
+					type: "text",
+					text: "• **Multi-modal content** (text, images, documents, code)\n• **File uploads** with drag & drop\n• **Real-time typing indicators**\n• **Message threading**\n• **Conversation export/import**\n• **Interactive code canvas**"
+				}
+			],
 			timestamp: new Date(),
 		},
-	];
+		{
+			id: "2",
+			role: "assistant",
+			content: [
+				{
+					type: "text",
+					text: "Here's an example of code I can display:"
+				},
+				{
+					type: "code",
+					code: `function greetUser(name: string): string {
+  return \`Hello, \${name}! Welcome to the AI UI Kit.\`;
+}
 
-	function handleSendMessage(message: string) {
-		// Add user message
-		const userMessage: ChatMessage = {
+// Usage example
+const greeting = greetUser("Developer");
+console.log(greeting);`,
+					language: "typescript",
+					filename: "greeting.ts",
+					editable: true
+				}
+			],
+			timestamp: new Date(),
+		}
+	]);
+
+	let typingIndicators = $state([]);
+	let fileUploads = $state([]);
+	let threads = $state([
+		{
+			id: "thread-1",
+			title: "Getting Started",
+			created_at: new Date(Date.now() - 86400000), // 1 day ago
+			updated_at: new Date(),
+			message_count: 3,
+			participants: ["1", "2"]
+		},
+		{
+			id: "thread-2",
+			title: "Feature Discussion",
+			created_at: new Date(Date.now() - 3600000), // 1 hour ago
+			updated_at: new Date(Date.now() - 1800000), // 30 min ago
+			message_count: 8,
+			participants: ["1", "2", "3"]
+		}
+	]);
+
+	function handleSendMessage(message: string | ContentPart[]) {
+		// Create and validate user message using Zod
+		const messageData = {
 			id: Date.now().toString(),
-			role: "user",
+			role: "user" as const,
 			content: message,
 			timestamp: new Date(),
 		};
+
+		const validation = validateChatMessage(messageData);
+		if (!validation.success) {
+			console.error('Message validation failed:', formatValidationErrors(validation.errors || []));
+			// In a real app, show user-friendly error message
+			return;
+		}
+
+		const userMessage = validation.data!;
 		messages = [...messages, userMessage];
 
 		// Simulate AI response
@@ -76,6 +144,49 @@
 	function handleMoreClick() {
 		console.log("More clicked");
 	}
+
+	function handleSendFiles(files: File[]) {
+		// Simulate file processing
+		files.forEach(file => {
+			const fileMessage: ChatMessage = {
+				id: Date.now().toString() + Math.random(),
+				role: "user",
+				content: [
+					{
+						type: "text",
+						text: `Uploaded file: ${file.name}`
+					},
+					{
+						type: "file",
+						source: { file_id: `file_${Date.now()}` },
+						media_type: file.type,
+						filename: file.name,
+						size: file.size
+					}
+				],
+				timestamp: new Date()
+			};
+			messages = [...messages, fileMessage];
+		});
+	}
+
+	function handleTypingStart() {
+		console.log("User started typing");
+	}
+
+	function handleTypingStop() {
+		console.log("User stopped typing");
+	}
+
+	function handleExportConversation() {
+		console.log("Exporting conversation...");
+		// In a real app, this would trigger the export
+	}
+
+	function handleImportConversation(data: any) {
+		console.log("Importing conversation:", data);
+		// In a real app, this would process the imported data
+	}
 </script>
 
 <svelte:head>
@@ -85,15 +196,25 @@
 <div class="h-screen">
 	<ChatView
 		{messages}
-		chatTitle="Waalkers"
+		{threads}
+		{typingIndicators}
+		{fileUploads}
+		chatTitle="Enhanced AI Chat Demo"
 		participants={[
 			{ id: "1", name: "Fernando", isOnline: true },
 			{ id: "2", name: "~Benko", isOnline: true },
 			{ id: "3", name: "Você", isOnline: true },
 		]}
-		placeholder="Ask anything"
+		placeholder="Try the new features: upload files, see typing indicators, export conversations..."
 		showTools={true}
+		enableThreading={true}
+		enableFileUpload={true}
+		enableCodeCanvas={true}
+		enableExport={true}
+		maxFileSize={10 * 1024 * 1024}
+		acceptedFileTypes={["image/*", "video/*", "audio/*", "text/*", ".pdf", ".doc", ".docx"]}
 		onSendMessage={handleSendMessage}
+		onSendFiles={handleSendFiles}
 		onCopyMessage={handleCopyMessage}
 		onThumbsUp={handleThumbsUp}
 		onThumbsDown={handleThumbsDown}
@@ -104,5 +225,9 @@
 		onCallClick={handleCallClick}
 		onSearchClick={handleSearchClick}
 		onMoreClick={handleMoreClick}
+		onTypingStart={handleTypingStart}
+		onTypingStop={handleTypingStop}
+		onExportConversation={handleExportConversation}
+		onImportConversation={handleImportConversation}
 	/>
 </div>

@@ -31,6 +31,7 @@
 		},
 		args: {
 			onSendMessage: fn(),
+			onSendFiles: fn(),
 			onCopyMessage: fn(),
 			onThumbsUp: fn(),
 			onThumbsDown: fn(),
@@ -40,7 +41,17 @@
 			onToolsClick: fn(),
 			onCallClick: fn(),
 			onSearchClick: fn(),
-			onMoreClick: fn()
+			onMoreClick: fn(),
+			onTypingStart: fn(),
+			onTypingStop: fn(),
+			onExportConversation: fn(),
+			onImportConversation: fn(),
+			onCreateThread: fn(),
+			onSwitchThread: fn(),
+			onDeleteThread: fn(),
+			onFileUpload: fn(),
+			onFileRemove: fn(),
+			onFilePreview: fn()
 		}
 	});
 </script>
@@ -213,6 +224,70 @@
 				id: "6",
 				role: "assistant",
 				content: "Weather satellites are incredible pieces of technology! There are two main types:\n\n## Geostationary Satellites\n• Orbit at 22,236 miles above Earth\n• Stay fixed over one location\n• Provide continuous monitoring of weather patterns\n• Examples: GOES satellites used by NOAA\n\n## Polar-Orbiting Satellites\n• Orbit much closer to Earth (500-800 miles)\n• Circle the planet every 90-120 minutes\n• Provide detailed global coverage\n• Better for long-term climate monitoring\n\n## What They Measure\n• **Visible light** - Cloud formations and surface features\n• **Infrared radiation** - Temperature of clouds and surface\n• **Water vapor** - Humidity levels in the atmosphere\n• **Lightning** - Storm intensity and location\n\nThese satellites have revolutionized weather prediction and help save countless lives by providing early warning for severe weather events!",
+				timestamp: new Date()
+			}
+		]
+	}}
+/>
+
+<!-- Multi-modal Content -->
+<Story
+	name="Multi-modal Content"
+	args={{
+		placeholder: "Try sending multi-modal content...",
+		showTools: true,
+		enableCodeCanvas: true,
+		enableFileUpload: true,
+		messages: [
+			{
+				id: "1",
+				role: "assistant",
+				content: [
+					{
+						type: "text",
+						text: "Here's a complete example of a React component with TypeScript:"
+					},
+					{
+						type: "code",
+						code: `import React, { useState } from 'react';
+
+interface CounterProps {
+  initialValue?: number;
+  step?: number;
+}
+
+const Counter: React.FC<CounterProps> = ({
+  initialValue = 0,
+  step = 1
+}) => {
+  const [count, setCount] = useState(initialValue);
+
+  const increment = () => setCount(prev => prev + step);
+  const decrement = () => setCount(prev => prev - step);
+  const reset = () => setCount(initialValue);
+
+  return (
+    <div className="counter">
+      <h2>Count: {count}</h2>
+      <div className="buttons">
+        <button onClick={decrement}>-{step}</button>
+        <button onClick={reset}>Reset</button>
+        <button onClick={increment}>+{step}</button>
+      </div>
+    </div>
+  );
+};
+
+export default Counter;`,
+						language: "typescript",
+						filename: "Counter.tsx",
+						editable: true
+					},
+					{
+						type: "text",
+						text: "This component demonstrates:\n• TypeScript interfaces for props\n• React hooks (useState)\n• Event handlers\n• Conditional rendering\n• Default parameters"
+					}
+				],
 				timestamp: new Date()
 			}
 		]
