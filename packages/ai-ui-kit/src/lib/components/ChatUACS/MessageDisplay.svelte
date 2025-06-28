@@ -42,7 +42,7 @@
   </div>
 
   <div class="message-content space-y-1"> {/* Reduced space-y for tighter packing of parts */}
-    {#each message.content as part (part.type + '-' + (part.id || part.tool_call_id || Math.random().toString(36).slice(2)))}
+    {#each message.content as part, index (part.type + '-' + (part.id || part.tool_call_id || index))}
       {@const PartComponent = getComponentForPart(part)}
       {#if PartComponent}
         <div class="content-part-wrapper"> {/* No extra padding/border here, let the part component define its own visuals */}
