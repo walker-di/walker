@@ -45,6 +45,7 @@ Connects agents to their operational context, whether that's a chat platform or 
 - Environment detection
 - Platform-specific optimizations
 - Real-time environment monitoring
+- Utilization of Universal AI Conversation Schema (UACS) for message structures
 
 **Deliverables:**
 - Chat platform connectors
@@ -86,7 +87,7 @@ Enables structured agent-to-agent interaction, making collaboration or delegatio
 
 **Key Features:**
 - Inter-agent messaging
-- Protocol standardization
+- Protocol standardization (leveraging UACS for message formats)
 - Message routing
 - Collaboration frameworks
 - Delegation mechanisms
@@ -136,6 +137,7 @@ Gives agents the ability to take meaningful action by interfacing with external 
 - Permission management
 - Action execution
 - Result processing
+- UACS-compliant tool call and result handling
 - Tool marketplace
 
 **Deliverables:**

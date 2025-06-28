@@ -66,12 +66,12 @@ A Node.js service layer providing:
 - [ ] Design system and theming
 
 ### Phase 2: AI Chat Interface (Q2 2025)
-- [ ] Multi-modal chat components (text, images, documents)
-- [ ] Code canvas for AI-generated code
-- [ ] File upload and preview components
-- [ ] Message threading and conversation management
-- [ ] Real-time typing indicators and status
-- [ ] Export/import conversation functionality
+- [ ] Advanced multi-modal chat components (text, images, video, audio, files) utilizing Universal AI Conversation Schema (UACS) content parts
+- [ ] Enhanced agent interaction: UI for tool usage (e.g., code canvas, data queries), display of multiple actor roles, and rendering of structured data like cards (UACS ToolCall/Result, StructuredDataPart)
+- [ ] File upload and preview components for various media types
+- [ ] UACS-aligned conversation management: structured messages with IDs, threading, distinct actor identities, and metadata handling
+- [ ] Real-time typing indicators and message status
+- [ ] Export/import conversation functionality using UACS format
 
 ### Phase 3: AI Service Kit (Q2-Q3 2025)
 - [ ] Node.js service package setup
