@@ -165,6 +165,7 @@
 	<!-- Export Dialog -->
 	<Dialog bind:open={exportDialogOpen}>
 		<DialogTrigger
+			asChild
 			class="inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium outline-none transition-all focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0 bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 border h-8 px-3"
 		>
 			<Download class="h-4 w-4" />
