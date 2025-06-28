@@ -1,4 +1,5 @@
 import type { Preview } from '@storybook/sveltekit'
+import { withThemeByClassName } from '@storybook/addon-themes'
 import '../src/app.css'
 
 const preview: Preview = {
@@ -10,31 +11,25 @@ const preview: Preview = {
       },
     },
     backgrounds: {
+      disable: true, // Disable backgrounds since we're using themes
+    },
+    themes: {
       default: 'dark',
-      values: [
-        {
-          name: 'dark',
-          value: '#111827',
-        },
-        {
-          name: 'light',
-          value: '#ffffff',
-        },
+      list: [
+        { name: 'light', class: '', color: '#ffffff' },
+        { name: 'dark', class: 'dark', color: '#111827' },
       ],
     },
   },
-  globalTypes: {
-    theme: {
-      description: 'Global theme for components',
-      defaultValue: 'dark',
-      toolbar: {
-        title: 'Theme',
-        icon: 'circlehollow',
-        items: ['light', 'dark'],
-        dynamicTitle: true,
+  decorators: [
+    withThemeByClassName({
+      themes: {
+        light: '',
+        dark: 'dark',
       },
-    },
-  },
+      defaultTheme: 'dark',
+    }),
+  ],
 };
 
 export default preview;

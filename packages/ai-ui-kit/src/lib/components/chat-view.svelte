@@ -89,14 +89,14 @@
 	const displayMessages = messages.length > 0 ? messages : sampleMessages;
 </script>
 
-<div class="flex h-screen flex-col bg-gray-900 text-white">
+<div class="flex h-screen flex-col bg-background text-foreground">
 	<!-- Header -->
-	<div class="flex items-center justify-between border-b border-gray-700 p-4">
+	<div class="flex items-center justify-between border-b border-border p-4">
 		<div class="flex items-center gap-2">
 			<h1 class="text-lg font-semibold">Chat</h1>
 		</div>
 		<div class="flex items-center gap-2">
-			<Badge variant="secondary" class="bg-gray-700 text-gray-300">hello</Badge>
+			<Badge variant="secondary">hello</Badge>
 		</div>
 	</div>
 
@@ -122,7 +122,7 @@
 									<Button
 										variant="ghost"
 										size="icon"
-										class="h-8 w-8 text-gray-400 hover:text-white"
+										class="h-8 w-8"
 										onclick={() => onCopyMessage?.(message.id)}
 									>
 										<Copy class="h-4 w-4" />
@@ -130,7 +130,7 @@
 									<Button
 										variant="ghost"
 										size="icon"
-										class="h-8 w-8 text-gray-400 hover:text-white"
+										class="h-8 w-8"
 										onclick={() => onThumbsUp?.(message.id)}
 									>
 										<ThumbsUp class="h-4 w-4" />
@@ -138,7 +138,7 @@
 									<Button
 										variant="ghost"
 										size="icon"
-										class="h-8 w-8 text-gray-400 hover:text-white"
+										class="h-8 w-8"
 										onclick={() => onThumbsDown?.(message.id)}
 									>
 										<ThumbsDown class="h-4 w-4" />
@@ -146,7 +146,7 @@
 									<Button
 										variant="ghost"
 										size="icon"
-										class="h-8 w-8 text-gray-400 hover:text-white"
+										class="h-8 w-8"
 										onclick={() => onPlayAudio?.(message.id)}
 									>
 										<Volume2 class="h-4 w-4" />
@@ -154,7 +154,7 @@
 									<Button
 										variant="ghost"
 										size="icon"
-										class="h-8 w-8 text-gray-400 hover:text-white"
+										class="h-8 w-8"
 										onclick={() => onRegenerate?.(message.id)}
 									>
 										<RotateCcw class="h-4 w-4" />
@@ -162,7 +162,7 @@
 									<Button
 										variant="ghost"
 										size="icon"
-										class="h-8 w-8 text-gray-400 hover:text-white"
+										class="h-8 w-8"
 										onclick={() => onDownload?.(message.id)}
 									>
 										<Download class="h-4 w-4" />
@@ -173,7 +173,7 @@
 						
 						{#if message.role === "user"}
 							<Avatar class="h-8 w-8 shrink-0">
-								<AvatarFallback class="bg-gray-600 text-white text-sm">U</AvatarFallback>
+								<AvatarFallback class="text-sm">U</AvatarFallback>
 							</Avatar>
 						{/if}
 					</div>
@@ -183,14 +183,14 @@
 	</div>
 
 	<!-- Input Area -->
-	<div class="border-t border-gray-700 p-4">
+	<div class="border-t border-border p-4">
 		<div class="mx-auto max-w-4xl">
 			<div class="relative flex items-end gap-2">
 				{#if showTools}
 					<Button
 						variant="ghost"
 						size="icon"
-						class="mb-2 h-10 w-10 shrink-0 text-gray-400 hover:text-white"
+						class="mb-2 h-10 w-10 shrink-0"
 						onclick={onToolsClick}
 					>
 						<Plus class="h-5 w-5" />
@@ -203,7 +203,7 @@
 						{placeholder}
 						{disabled}
 						onkeydown={handleKeydown}
-						class="min-h-[52px] resize-none border-gray-600 bg-gray-800 pr-20 text-white placeholder:text-gray-400 focus:border-gray-500"
+						class="min-h-[52px] resize-none pr-20"
 						rows={1}
 					/>
 					
@@ -212,7 +212,7 @@
 							<Button
 								variant="ghost"
 								size="icon"
-								class="h-8 w-8 text-gray-400 hover:text-white"
+								class="h-8 w-8"
 								onclick={onToolsClick}
 							>
 								<Settings class="h-4 w-4" />
@@ -222,7 +222,7 @@
 						<Button
 							variant="ghost"
 							size="icon"
-							class="h-8 w-8 text-gray-400 hover:text-white"
+							class="h-8 w-8"
 							onclick={toggleRecording}
 						>
 							{#if isRecording}
@@ -235,7 +235,7 @@
 						<Button
 							variant="ghost"
 							size="icon"
-							class="h-8 w-8 text-gray-400 hover:text-white"
+							class="h-8 w-8"
 							onclick={handleSend}
 							disabled={!inputValue.trim() || disabled}
 						>

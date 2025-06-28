@@ -8,8 +8,7 @@
 		component: ChatView,
 		tags: ['autodocs'],
 		parameters: {
-			layout: 'fullscreen',
-			backgrounds: { default: 'dark' }
+			layout: 'fullscreen'
 		},
 
 		argTypes: {
