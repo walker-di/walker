@@ -95,6 +95,16 @@
 				description: "Enable conversation export/import functionality",
 			},
 
+			// Avatar Display Options
+			showUserAvatar: {
+				control: "boolean",
+				description: "Whether to show user avatars in messages",
+			},
+			showMemberAvatar: {
+				control: "boolean",
+				description: "Whether to show member/assistant avatars in messages",
+			},
+
 			// File Upload Settings
 			maxFileSize: {
 				control: "number",
@@ -766,5 +776,230 @@ class ChatViewModel {
 					: `Assistant response ${i + 1}: I understand your message. Here's a detailed response that includes multiple lines of text to simulate realistic conversation content. This helps test scrolling performance and rendering efficiency.\n\nAdditional details:\n• Point 1: Performance testing\n• Point 2: Message rendering\n• Point 3: Scroll behavior\n• Point 4: Memory usage`,
 			timestamp: new Date(Date.now() - (50 - i) * 60000), // Messages spread over time
 		})),
+	}}
+/>
+
+<!-- Avatar Options Demo -->
+<Story
+	name="Avatar Options - Both Enabled"
+	args={{
+		placeholder: "Both user and member avatars are shown",
+		showTools: true,
+		showUserAvatar: true,
+		showMemberAvatar: true,
+		chatTitle: "Avatar Demo - Both Enabled",
+		participants: [
+			{ id: "user", name: "You", isOnline: true },
+			{ id: "assistant", name: "AI Assistant", isOnline: true },
+		],
+		messages: [
+			{
+				id: "1",
+				role: "assistant",
+				content:
+					"Hello! I'm your AI assistant. Notice that both user and assistant avatars are visible in this conversation.",
+				timestamp: new Date(),
+			},
+			{
+				id: "2",
+				role: "user",
+				content: "Great! I can see both avatars are displayed.",
+				timestamp: new Date(),
+			},
+			{
+				id: "3",
+				role: "assistant",
+				content:
+					"Exactly! This makes it easy to distinguish between different participants in the conversation.",
+				timestamp: new Date(),
+			},
+		],
+	}}
+/>
+
+<Story
+	name="Avatar Options - Both Disabled"
+	args={{
+		placeholder: "No avatars are shown for a cleaner look",
+		showTools: true,
+		showUserAvatar: false,
+		showMemberAvatar: false,
+		chatTitle: "Avatar Demo - Both Disabled",
+		participants: [
+			{ id: "user", name: "You", isOnline: true },
+			{ id: "assistant", name: "AI Assistant", isOnline: true },
+		],
+		messages: [
+			{
+				id: "1",
+				role: "assistant",
+				content:
+					"Hello! In this view, no avatars are displayed for a cleaner, more minimal interface.",
+				timestamp: new Date(),
+			},
+			{
+				id: "2",
+				role: "user",
+				content: "This looks very clean without the avatars!",
+				timestamp: new Date(),
+			},
+			{
+				id: "3",
+				role: "assistant",
+				content:
+					"Yes! This is perfect for simple conversations where you don't need visual distinction between participants.",
+				timestamp: new Date(),
+			},
+		],
+	}}
+/>
+
+<Story
+	name="Avatar Options - User Only"
+	args={{
+		placeholder: "Only user avatars are shown",
+		showTools: true,
+		showUserAvatar: true,
+		showMemberAvatar: false,
+		chatTitle: "Avatar Demo - User Only",
+		participants: [
+			{ id: "user", name: "You", isOnline: true },
+			{ id: "assistant", name: "AI Assistant", isOnline: true },
+		],
+		messages: [
+			{
+				id: "1",
+				role: "assistant",
+				content:
+					"In this configuration, only user avatars are shown while assistant messages appear without avatars.",
+				timestamp: new Date(),
+			},
+			{
+				id: "2",
+				role: "user",
+				content: "I can see my avatar but not yours!",
+				timestamp: new Date(),
+			},
+			{
+				id: "3",
+				role: "assistant",
+				content:
+					"That's right! This can be useful when you want to emphasize user messages.",
+				timestamp: new Date(),
+			},
+		],
+	}}
+/>
+
+<Story
+	name="Avatar Options - Member Only"
+	args={{
+		placeholder: "Only member/assistant avatars are shown",
+		showTools: true,
+		showUserAvatar: false,
+		showMemberAvatar: true,
+		chatTitle: "Avatar Demo - Member Only",
+		participants: [
+			{ id: "user", name: "You", isOnline: true },
+			{ id: "assistant", name: "AI Assistant", isOnline: true },
+		],
+		messages: [
+			{
+				id: "1",
+				role: "assistant",
+				content:
+					"Here, only assistant/member avatars are displayed while user messages appear without avatars.",
+				timestamp: new Date(),
+			},
+			{
+				id: "2",
+				role: "user",
+				content: "My message doesn't have an avatar, but yours does!",
+				timestamp: new Date(),
+			},
+			{
+				id: "3",
+				role: "assistant",
+				content:
+					"Exactly! This is useful when you want to highlight responses from assistants or other members.",
+				timestamp: new Date(),
+			},
+		],
+	}}
+/>
+
+<Story
+	name="Avatar Options - Multi-participant (Default Behavior)"
+	args={{
+		placeholder: "Default behavior with multiple participants",
+		showTools: true,
+		// showUserAvatar and showMemberAvatar not set (using defaults)
+		chatTitle: "Avatar Demo - Multi-participant",
+		participants: [
+			{ id: "user", name: "You", isOnline: true },
+			{ id: "assistant", name: "AI Assistant", isOnline: true },
+			{ id: "alice", name: "Alice", isOnline: true },
+			{ id: "bob", name: "Bob", isOnline: false },
+		],
+		messages: [
+			{
+				id: "1",
+				role: "assistant",
+				content:
+					"With multiple participants (more than 2), member avatars are shown by default to help distinguish between different speakers.",
+				timestamp: new Date(),
+			},
+			{
+				id: "2",
+				role: "user",
+				content:
+					"I notice the assistant avatar is visible because there are multiple participants.",
+				timestamp: new Date(),
+			},
+			{
+				id: "3",
+				role: "assistant",
+				content:
+					"That's the default behavior! When there are only 2 participants (user + AI), member avatars are hidden by default for a cleaner look.",
+				timestamp: new Date(),
+			},
+		],
+	}}
+/>
+
+<Story
+	name="Avatar Options - Two Participants (Default Behavior)"
+	args={{
+		placeholder: "Default behavior with only two participants",
+		showTools: true,
+		// showUserAvatar and showMemberAvatar not set (using defaults)
+		chatTitle: "Avatar Demo - Two Participants",
+		participants: [
+			{ id: "user", name: "You", isOnline: true },
+			{ id: "assistant", name: "AI Assistant", isOnline: true },
+		],
+		messages: [
+			{
+				id: "1",
+				role: "assistant",
+				content:
+					"With only 2 participants, member avatars are hidden by default since it's clear who is speaking.",
+				timestamp: new Date(),
+			},
+			{
+				id: "2",
+				role: "user",
+				content:
+					"I see! No avatars are shown by default when it's just me and the AI.",
+				timestamp: new Date(),
+			},
+			{
+				id: "3",
+				role: "assistant",
+				content:
+					"Exactly! This keeps the interface clean for simple one-on-one conversations.",
+				timestamp: new Date(),
+			},
+		],
 	}}
 />

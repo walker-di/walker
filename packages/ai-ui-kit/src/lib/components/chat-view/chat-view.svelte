@@ -22,6 +22,20 @@
 		return Array.isArray(message.content);
 	}
 
+	// Helper function to determine if avatars should be shown
+	function shouldShowUserAvatar(): boolean {
+		return props.showUserAvatar ?? false;
+	}
+
+	function shouldShowMemberAvatar(): boolean {
+		if (props.showMemberAvatar === false) return false;
+		if (props.showMemberAvatar === true) return true;
+
+		// Default behavior: don't show if only 2 participants (user + AI)
+		const participantCount = (props.participants || []).length;
+		return participantCount > 2;
+	}
+
 	// Lucide icons
 	import Copy from "lucide-svelte/icons/copy";
 	import ThumbsUp from "lucide-svelte/icons/thumbs-up";
@@ -114,8 +128,8 @@
 						participants={props.participants || []}
 						threads={props.threads || []}
 						conversationTitle={props.chatTitle || "Chat"}
-						onExportConversation={props.onExportConversation}
-						onImportConversation={props.onImportConversation}
+						onExport={props.onExportConversation}
+						onImport={props.onImportConversation}
 					/>
 				{/if}
 
@@ -154,11 +168,15 @@
 				<div class="space-y-4 p-6">
 					{#each chatViewModel.displayMessages as message (message.id)}
 						<div
-							class="flex gap-3 {message.role === 'user'
+							class="flex {message.role === 'user'
 								? 'justify-end'
-								: 'justify-start'}"
+								: 'justify-start'} {(message.role === 'assistant' &&
+								shouldShowMemberAvatar()) ||
+							(message.role === 'user' && shouldShowUserAvatar())
+								? 'gap-3'
+								: 'gap-0'}"
 						>
-							{#if message.role === "assistant"}
+							{#if message.role === "assistant" && shouldShowMemberAvatar()}
 								<Avatar class="h-8 w-8 shrink-0 mt-1">
 									<AvatarFallback class="bg-blue-600 text-white text-sm"
 										>AI</AvatarFallback
@@ -176,8 +194,8 @@
 												<div
 													class="
 												{message.role === 'user'
-														? 'bg-green-500 text-white rounded-2xl rounded-br-md'
-														: 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-2xl rounded-bl-md border border-gray-200 dark:border-gray-700'}
+														? 'bg-green-500 text-white rounded-2xl rounded-tr-md'
+														: 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-2xl rounded-tl-md border border-gray-200 dark:border-gray-700'}
 												px-4 py-3 shadow-sm
 											"
 												>
@@ -221,8 +239,8 @@
 										<div
 											class="
 										{message.role === 'user'
-												? 'bg-green-500 text-white rounded-2xl rounded-br-md'
-												: 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-2xl rounded-bl-md border border-gray-200 dark:border-gray-700'}
+												? 'bg-green-500 text-white rounded-2xl rounded-tr-md'
+												: 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-2xl rounded-tl-md border border-gray-200 dark:border-gray-700'}
 										px-4 py-3 shadow-sm
 									"
 										>
@@ -299,7 +317,7 @@
 								</div>
 							{/if}
 
-							{#if message.role === "user"}
+							{#if message.role === "user" && shouldShowUserAvatar()}
 								<Avatar class="h-8 w-8 shrink-0 mt-1">
 									<AvatarFallback class="bg-green-600 text-white text-sm"
 										>U</AvatarFallback

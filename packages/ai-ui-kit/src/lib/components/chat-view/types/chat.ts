@@ -162,6 +162,10 @@ export interface ChatViewProps {
 	enableCodeCanvas?: boolean;
 	enableExport?: boolean;
 
+	// Avatar display options
+	showUserAvatar?: boolean;
+	showMemberAvatar?: boolean;
+
 	// Message handlers
 	onSendMessage?: (message: string | ContentPart[]) => void;
 	onSendFiles?: (files: File[]) => void;
