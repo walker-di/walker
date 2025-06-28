@@ -31,48 +31,46 @@ export const RightArrow = () => <svg
   <path d="m11.1 7.35-5.5 5.5a.5.5 0 0 1-.7-.7L10.04 7 4.9 1.85a.5.5 0 1 1 .7-.7l5.5 5.5c.2.2.2.5 0 .7Z" />
 </svg>
 
-<Meta title="Configure your project" />
+<Meta title="AI UI Kit - Svelte Library" />
 
 <div className="sb-container">
   <div className='sb-section-title'>
-    # Configure your project
+    # AI UI Kit - Svelte Library
 
-    Because Storybook works separately from your app, you'll need to configure it for your specific stack and setup. Below, explore guides for configuring Storybook with popular frameworks and tools. If you get stuck, learn how you can ask for help from our community.
+    This is a Svelte library project powered by [`sv`](https://npmjs.com/package/sv). Everything inside `src/lib` is part of the library, and this Storybook serves as both documentation and a showcase for the components. Below you'll find information about developing, building, and publishing this library.
   </div>
   <div className="sb-section">
     <div className="sb-section-item">
       <img
         src={Styling}
-        alt="A wall of logos representing different styling technologies"
+        alt="Development workflow illustration"
       />
-      <h4 className="sb-section-item-heading">Add styling and CSS</h4>
-      <p className="sb-section-item-paragraph">Like with web applications, there are many ways to include CSS within Storybook. Learn more about setting up styling within Storybook.</p>
+      <h4 className="sb-section-item-heading">Development</h4>
+      <p className="sb-section-item-paragraph">Start the development server to work on your library components. Use `npm run dev` to start developing, or `npm run dev -- --open` to open in a new browser tab.</p>
       <a
-        href="https://storybook.js.org/docs/configure/styling-and-css/?renderer=svelte"
+        href="https://svelte.dev/docs/kit/packaging"
         target="_blank"
-      >Learn more<RightArrow /></a>
+      >Learn more about Svelte libraries<RightArrow /></a>
     </div>
     <div className="sb-section-item">
       <img
         src={Context}
-        alt="An abstraction representing the composition of data for a component"
+        alt="Building and packaging illustration"
       />
-      <h4 className="sb-section-item-heading">Provide context and mocking</h4>
-      <p className="sb-section-item-paragraph">Often when a story doesn't render, it's because your component is expecting a specific environment or context (like a theme provider) to be available.</p>
+      <h4 className="sb-section-item-heading">Building & Packaging</h4>
+      <p className="sb-section-item-paragraph">Build your library with `npm run package` to create the distributable package. Use `npm run build` to create a production version of the showcase app.</p>
       <a
-        href="https://storybook.js.org/docs/writing-stories/decorators/?renderer=svelte#context-for-mocking"
+        href="https://svelte.dev/docs/kit/packaging"
         target="_blank"
       >Learn more<RightArrow /></a>
     </div>
     <div className="sb-section-item">
-      <img src={Assets} alt="A representation of typography and image assets" />
+      <img src={Assets} alt="Publishing and distribution illustration" />
       <div>
-        <h4 className="sb-section-item-heading">Load assets and resources</h4>
-        <p className="sb-section-item-paragraph">To link static files (like fonts) to your projects and stories, use the
-        `staticDirs` configuration option to specify folders to load when
-        starting Storybook.</p>
+        <h4 className="sb-section-item-heading">Publishing</h4>
+        <p className="sb-section-item-paragraph">Configure your `package.json` with the desired name and license, then publish to npm with `npm publish`. Consider adding a LICENSE file for your chosen license.</p>
         <a
-          href="https://storybook.js.org/docs/configure/images-and-assets/?renderer=svelte"
+          href="https://docs.npmjs.com/cli/v8/commands/npm-publish"
           target="_blank"
         >Learn more<RightArrow /></a>
       </div>
@@ -81,67 +79,64 @@ export const RightArrow = () => <svg
 </div>
 <div className="sb-container">
   <div className='sb-section-title'>
-    # Do more with Storybook
+    # Library Development Workflow
 
-    Now that you know the basics, let's explore other parts of Storybook that will improve your experience. This list is just to get you started. You can customise Storybook in many ways to fit your needs.
+    This Storybook serves as both documentation and a development environment for your Svelte library components. Use it to develop, test, and showcase your components in isolation.
   </div>
 
   <div className="sb-section">
     <div className="sb-features-grid">
       <div className="sb-grid-item">
-        <img src={Docs} alt="A screenshot showing the autodocs tag being set, pointing a docs page being generated" />
-        <h4 className="sb-section-item-heading">Autodocs</h4>
-        <p className="sb-section-item-paragraph">Auto-generate living,
-          interactive reference documentation from your components and stories.</p>
+        <img src={Docs} alt="Component documentation illustration" />
+        <h4 className="sb-section-item-heading">Component Documentation</h4>
+        <p className="sb-section-item-paragraph">Use Storybook to document your library components with interactive examples and auto-generated documentation.</p>
         <a
           href="https://storybook.js.org/docs/writing-docs/autodocs/?renderer=svelte"
           target="_blank"
         >Learn more<RightArrow /></a>
       </div>
       <div className="sb-grid-item">
-        <img src={Share} alt="A browser window showing a Storybook being published to a chromatic.com URL" />
-        <h4 className="sb-section-item-heading">Publish to Chromatic</h4>
-        <p className="sb-section-item-paragraph">Publish your Storybook to review and collaborate with your entire team.</p>
+        <img src={Share} alt="Library showcase illustration" />
+        <h4 className="sb-section-item-heading">Showcase App</h4>
+        <p className="sb-section-item-paragraph">Everything inside `src/routes` serves as a showcase or preview app for your library components.</p>
         <a
-          href="https://storybook.js.org/docs/sharing/publish-storybook/?renderer=svelte#publish-storybook-with-chromatic"
+          href="https://svelte.dev/docs/kit/packaging"
           target="_blank"
         >Learn more<RightArrow /></a>
       </div>
       <div className="sb-grid-item">
-        <img src={FigmaPlugin} alt="Windows showing the Storybook plugin in Figma" />
-        <h4 className="sb-section-item-heading">Figma Plugin</h4>
-        <p className="sb-section-item-paragraph">Embed your stories into Figma to cross-reference the design and live
-          implementation in one place.</p>
+        <img src={FigmaPlugin} alt="Component isolation illustration" />
+        <h4 className="sb-section-item-heading">Component Isolation</h4>
+        <p className="sb-section-item-paragraph">Develop and test components in isolation, making it easier to build robust and reusable UI components.</p>
         <a
-          href="https://storybook.js.org/docs/sharing/design-integrations/?renderer=svelte#embed-storybook-in-figma-with-the-plugin"
+          href="https://storybook.js.org/docs/get-started/why-storybook"
           target="_blank"
         >Learn more<RightArrow /></a>
       </div>
       <div className="sb-grid-item">
-        <img src={Testing} alt="Screenshot of tests passing and failing" />
-        <h4 className="sb-section-item-heading">Testing</h4>
-        <p className="sb-section-item-paragraph">Use stories to test a component in all its variations, no matter how
-          complex.</p>
+        <img src={Testing} alt="Testing illustration" />
+        <h4 className="sb-section-item-heading">Component Testing</h4>
+        <p className="sb-section-item-paragraph">Test your library components in all their variations and states using Storybook stories as test cases.</p>
         <a
           href="https://storybook.js.org/docs/writing-tests/?renderer=svelte"
           target="_blank"
         >Learn more<RightArrow /></a>
       </div>
       <div className="sb-grid-item">
-        <img src={Accessibility} alt="Screenshot of accessibility tests passing and failing" />
+        <img src={Accessibility} alt="Accessibility testing illustration" />
         <h4 className="sb-section-item-heading">Accessibility</h4>
-        <p className="sb-section-item-paragraph">Automatically test your components for a11y issues as you develop.</p>
+        <p className="sb-section-item-paragraph">Ensure your library components are accessible by testing for a11y issues during development.</p>
         <a
           href="https://storybook.js.org/docs/writing-tests/accessibility-testing/?renderer=svelte"
           target="_blank"
         >Learn more<RightArrow /></a>
       </div>
       <div className="sb-grid-item">
-        <img src={Theming} alt="Screenshot of Storybook in light and dark mode" />
-        <h4 className="sb-section-item-heading">Theming</h4>
-        <p className="sb-section-item-paragraph">Theme Storybook's UI to personalize it to your project.</p>
+        <img src={Theming} alt="Library customization illustration" />
+        <h4 className="sb-section-item-heading">Library Structure</h4>
+        <p className="sb-section-item-paragraph">Everything in `src/lib` becomes part of your published library package, organized for easy consumption by users.</p>
         <a
-          href="https://storybook.js.org/docs/configure/theming/?renderer=svelte"
+          href="https://svelte.dev/docs/kit/packaging"
           target="_blank"
         >Learn more<RightArrow /></a>
       </div>
@@ -150,58 +145,58 @@ export const RightArrow = () => <svg
 </div>
 <div className='sb-addon'>
   <div className='sb-addon-text'>
-    <h4>Addons</h4>
-    <p className="sb-section-item-paragraph">Integrate your tools with Storybook to connect workflows.</p>
+    <h4>Quick Start Commands</h4>
+    <p className="sb-section-item-paragraph">Essential commands for developing your Svelte library: `npm run dev` for development, `npm run package` to build, and `npm publish` to distribute.</p>
     <a
-        href="https://storybook.js.org/addons/"
+        href="https://svelte.dev/docs/kit/packaging"
         target="_blank"
-      >Discover all addons<RightArrow /></a>
+      >View Svelte library docs<RightArrow /></a>
   </div>
   <div className='sb-addon-img'>
-    <img src={AddonLibrary} alt="Integrate your tools with Storybook to connect workflows." />
+    <img src={AddonLibrary} alt="Svelte library development workflow" />
   </div>
 </div>
 
 <div className="sb-section sb-socials">
     <div className="sb-section-item">
       <img src={Github} alt="Github logo" className="sb-explore-image"/>
-      Join our contributors building the future of UI development.
+      Explore the source code and contribute to this Svelte library project.
 
       <a
-        href="https://github.com/storybookjs/storybook"
+        href="https://github.com/your-username/your-repo"
         target="_blank"
-      >Star on GitHub<RightArrow /></a>
+      >View on GitHub<RightArrow /></a>
     </div>
     <div className="sb-section-item">
-      <img src={Discord} alt="Discord logo" className="sb-explore-image"/>
+      <img src={Discord} alt="Svelte logo" className="sb-explore-image"/>
       <div>
-        Get support and chat with frontend developers.
+        Learn more about building Svelte libraries and components.
 
         <a
-          href="https://discord.gg/storybook"
+          href="https://svelte.dev/docs/kit/packaging"
           target="_blank"
-        >Join Discord server<RightArrow /></a>
+        >Svelte Library Docs<RightArrow /></a>
       </div>
     </div>
     <div className="sb-section-item">
-      <img src={Youtube} alt="Youtube logo" className="sb-explore-image"/>
+      <img src={Youtube} alt="NPM logo" className="sb-explore-image"/>
       <div>
-        Watch tutorials, feature previews and interviews.
+        Publish your library to npm for others to use.
 
         <a
-          href="https://www.youtube.com/@chromaticui"
+          href="https://docs.npmjs.com/cli/v8/commands/npm-publish"
           target="_blank"
-        >Watch on YouTube<RightArrow /></a>
+        >NPM Publishing Guide<RightArrow /></a>
       </div>
     </div>
     <div className="sb-section-item">
       <img src={Tutorials} alt="A book" className="sb-explore-image"/>
-      <p>Follow guided walkthroughs on for key workflows.</p>
+      <p>Learn about Storybook for Svelte component development.</p>
 
       <a
-          href="https://storybook.js.org/tutorials/"
+          href="https://storybook.js.org/docs/get-started/frameworks/sveltekit"
           target="_blank"
-        >Discover tutorials<RightArrow /></a>
+        >Storybook + Svelte<RightArrow /></a>
     </div>
 </div>
 
