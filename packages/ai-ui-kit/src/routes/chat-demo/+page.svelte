@@ -64,6 +64,18 @@
 	function handleToolsClick() {
 		console.log('Tools clicked');
 	}
+
+	function handleCallClick() {
+		console.log('Call clicked');
+	}
+
+	function handleSearchClick() {
+		console.log('Search clicked');
+	}
+
+	function handleMoreClick() {
+		console.log('More clicked');
+	}
 </script>
 
 <svelte:head>
@@ -73,6 +85,12 @@
 <div class="h-screen">
 	<ChatView
 		{messages}
+		chatTitle="Waalkers"
+		participants={[
+			{ id: "1", name: "Fernando", isOnline: true },
+			{ id: "2", name: "~Benko", isOnline: true },
+			{ id: "3", name: "Você", isOnline: true }
+		]}
 		placeholder="Ask anything"
 		showTools={true}
 		onSendMessage={handleSendMessage}
@@ -83,5 +101,8 @@
 		onRegenerate={handleRegenerate}
 		onDownload={handleDownload}
 		onToolsClick={handleToolsClick}
+		onCallClick={handleCallClick}
+		onSearchClick={handleSearchClick}
+		onMoreClick={handleMoreClick}
 	/>
 </div>

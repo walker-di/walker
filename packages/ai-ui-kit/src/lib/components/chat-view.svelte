@@ -3,7 +3,6 @@
 	import { Textarea } from "$lib/components/ui/textarea/index.js";
 	import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
 	import { Avatar, AvatarFallback } from "$lib/components/ui/avatar/index.js";
-	import { Badge } from "$lib/components/ui/badge/index.js";
 	
 	// Lucide icons
 	import Copy from "lucide-svelte/icons/copy";
@@ -17,6 +16,9 @@
 	import Mic from "lucide-svelte/icons/mic";
 	import MicOff from "lucide-svelte/icons/mic-off";
 	import Send from "lucide-svelte/icons/send";
+	import Phone from "lucide-svelte/icons/phone";
+	import Search from "lucide-svelte/icons/search";
+	import MoreVertical from "lucide-svelte/icons/more-vertical";
 
 	export interface ChatMessage {
 		id: string;
@@ -25,11 +27,21 @@
 		timestamp?: Date;
 	}
 
+	export interface ChatParticipant {
+		id: string;
+		name: string;
+		avatar?: string;
+		isOnline?: boolean;
+		isTyping?: boolean;
+	}
+
 	export interface ChatViewProps {
 		messages?: ChatMessage[];
 		placeholder?: string;
 		disabled?: boolean;
 		showTools?: boolean;
+		chatTitle?: string;
+		participants?: ChatParticipant[];
 		onSendMessage?: (message: string) => void;
 		onCopyMessage?: (messageId: string) => void;
 		onThumbsUp?: (messageId: string) => void;
@@ -38,6 +50,9 @@
 		onRegenerate?: (messageId: string) => void;
 		onDownload?: (messageId: string) => void;
 		onToolsClick?: () => void;
+		onCallClick?: () => void;
+		onSearchClick?: () => void;
+		onMoreClick?: () => void;
 	}
 
 	let {
@@ -45,6 +60,12 @@
 		placeholder = "Ask anything",
 		disabled = false,
 		showTools = true,
+		chatTitle = "Waalkers",
+		participants = [
+			{ id: "1", name: "Fernando", isOnline: true },
+			{ id: "2", name: "~Benko", isOnline: true },
+			{ id: "3", name: "Você", isOnline: true }
+		],
 		onSendMessage,
 		onCopyMessage,
 		onThumbsUp,
@@ -52,7 +73,10 @@
 		onPlayAudio,
 		onRegenerate,
 		onDownload,
-		onToolsClick
+		onToolsClick,
+		onCallClick,
+		onSearchClick,
+		onMoreClick
 	}: ChatViewProps = $props();
 
 	let inputValue = $state("");
@@ -89,91 +113,163 @@
 	const displayMessages = messages.length > 0 ? messages : sampleMessages;
 </script>
 
-<div class="flex h-screen flex-col bg-background text-foreground">
+<div class="flex h-screen flex-col bg-gray-50 dark:bg-gray-900 text-foreground">
 	<!-- Header -->
-	<div class="flex items-center justify-between border-b border-border p-4">
-		<div class="flex items-center gap-2">
-			<h1 class="text-lg font-semibold">Chat</h1>
+	<div class="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 bg-gray-900 text-white p-4 shadow-sm">
+		<div class="flex items-center gap-3">
+			<!-- Chat Icon/Logo -->
+			<div class="flex items-center justify-center w-8 h-8 bg-white rounded-full">
+				<div class="w-5 h-5 bg-gray-900 rounded-full flex items-center justify-center">
+					<div class="w-2 h-2 bg-white rounded-full"></div>
+				</div>
+			</div>
+
+			<div class="flex flex-col">
+				<h1 class="text-lg font-semibold text-white">{chatTitle}</h1>
+				<div class="flex items-center gap-1 text-sm text-gray-300">
+					{#each participants as participant, index}
+						<span class="flex items-center gap-1">
+							{participant.name}
+							{#if participant.isOnline}
+								<div class="w-2 h-2 bg-green-400 rounded-full"></div>
+							{/if}
+						</span>
+						{#if index < participants.length - 1}
+							<span class="text-gray-400">,</span>
+						{/if}
+					{/each}
+				</div>
+			</div>
 		</div>
+
 		<div class="flex items-center gap-2">
-			<Badge variant="secondary">hello</Badge>
+			<Button
+				variant="ghost"
+				size="icon"
+				class="h-8 w-8 text-gray-300 hover:text-white hover:bg-gray-800"
+				onclick={onCallClick}
+			>
+				<Phone class="h-4 w-4" />
+			</Button>
+
+			<Button
+				variant="ghost"
+				size="icon"
+				class="h-8 w-8 text-gray-300 hover:text-white hover:bg-gray-800"
+				onclick={onSearchClick}
+			>
+				<Search class="h-4 w-4" />
+			</Button>
+
+			<Button
+				variant="ghost"
+				size="icon"
+				class="h-8 w-8 text-gray-300 hover:text-white hover:bg-gray-800"
+				onclick={onMoreClick}
+			>
+				<MoreVertical class="h-4 w-4" />
+			</Button>
 		</div>
 	</div>
 
 	<!-- Messages Area -->
 	<div class="flex-1 overflow-hidden">
 		<ScrollArea class="h-full">
-			<div class="space-y-6 p-6">
+			<div class="space-y-4 p-6">
 				{#each displayMessages as message (message.id)}
-					<div class="flex gap-4">
+					<div class="flex gap-3 {message.role === 'user' ? 'justify-end' : 'justify-start'}">
 						{#if message.role === "assistant"}
-							<Avatar class="h-8 w-8 shrink-0">
+							<Avatar class="h-8 w-8 shrink-0 mt-1">
 								<AvatarFallback class="bg-blue-600 text-white text-sm">AI</AvatarFallback>
 							</Avatar>
 						{/if}
-						
-						<div class="flex-1 space-y-2">
-							<div class="prose prose-invert max-w-none">
-								{@html message.content.replace(/\n/g, '<br>')}
+
+						<div class="flex flex-col space-y-2 max-w-[70%]">
+							<!-- Message Bubble -->
+							<div class="relative group">
+								<div class="
+									{message.role === 'user'
+										? 'bg-green-500 text-white rounded-2xl rounded-br-md'
+										: 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-2xl rounded-bl-md border border-gray-200 dark:border-gray-700'
+									}
+									px-4 py-3 shadow-sm
+								">
+									<div class="text-sm leading-relaxed whitespace-pre-wrap">
+										{@html message.content.replace(/\n/g, '<br>')}
+									</div>
+
+									{#if message.timestamp}
+										<div class="text-xs opacity-70 mt-1 text-right">
+											{message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+										</div>
+									{/if}
+								</div>
+
+								<!-- Message tail/pointer -->
+								{#if message.role === 'user'}
+									<div class="absolute -bottom-0 -right-0 w-0 h-0 border-l-[8px] border-l-green-500 border-t-[8px] border-t-transparent"></div>
+								{:else}
+									<div class="absolute -bottom-0 -left-0 w-0 h-0 border-r-[8px] border-r-white dark:border-r-gray-800 border-t-[8px] border-t-transparent"></div>
+								{/if}
 							</div>
-							
+
 							{#if message.role === "assistant"}
-								<div class="flex items-center gap-1">
+								<div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 ml-2">
 									<Button
 										variant="ghost"
 										size="icon"
-										class="h-8 w-8"
+										class="h-7 w-7 hover:bg-gray-100 dark:hover:bg-gray-700"
 										onclick={() => onCopyMessage?.(message.id)}
 									>
-										<Copy class="h-4 w-4" />
+										<Copy class="h-3.5 w-3.5" />
 									</Button>
 									<Button
 										variant="ghost"
 										size="icon"
-										class="h-8 w-8"
+										class="h-7 w-7 hover:bg-gray-100 dark:hover:bg-gray-700"
 										onclick={() => onThumbsUp?.(message.id)}
 									>
-										<ThumbsUp class="h-4 w-4" />
+										<ThumbsUp class="h-3.5 w-3.5" />
 									</Button>
 									<Button
 										variant="ghost"
 										size="icon"
-										class="h-8 w-8"
+										class="h-7 w-7 hover:bg-gray-100 dark:hover:bg-gray-700"
 										onclick={() => onThumbsDown?.(message.id)}
 									>
-										<ThumbsDown class="h-4 w-4" />
+										<ThumbsDown class="h-3.5 w-3.5" />
 									</Button>
 									<Button
 										variant="ghost"
 										size="icon"
-										class="h-8 w-8"
+										class="h-7 w-7 hover:bg-gray-100 dark:hover:bg-gray-700"
 										onclick={() => onPlayAudio?.(message.id)}
 									>
-										<Volume2 class="h-4 w-4" />
+										<Volume2 class="h-3.5 w-3.5" />
 									</Button>
 									<Button
 										variant="ghost"
 										size="icon"
-										class="h-8 w-8"
+										class="h-7 w-7 hover:bg-gray-100 dark:hover:bg-gray-700"
 										onclick={() => onRegenerate?.(message.id)}
 									>
-										<RotateCcw class="h-4 w-4" />
+										<RotateCcw class="h-3.5 w-3.5" />
 									</Button>
 									<Button
 										variant="ghost"
 										size="icon"
-										class="h-8 w-8"
+										class="h-7 w-7 hover:bg-gray-100 dark:hover:bg-gray-700"
 										onclick={() => onDownload?.(message.id)}
 									>
-										<Download class="h-4 w-4" />
+										<Download class="h-3.5 w-3.5" />
 									</Button>
 								</div>
 							{/if}
 						</div>
-						
+
 						{#if message.role === "user"}
-							<Avatar class="h-8 w-8 shrink-0">
-								<AvatarFallback class="text-sm">U</AvatarFallback>
+							<Avatar class="h-8 w-8 shrink-0 mt-1">
+								<AvatarFallback class="bg-green-600 text-white text-sm">U</AvatarFallback>
 							</Avatar>
 						{/if}
 					</div>

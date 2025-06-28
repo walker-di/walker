@@ -37,7 +37,10 @@
 			onPlayAudio: fn(),
 			onRegenerate: fn(),
 			onDownload: fn(),
-			onToolsClick: fn()
+			onToolsClick: fn(),
+			onCallClick: fn(),
+			onSearchClick: fn(),
+			onMoreClick: fn()
 		}
 	});
 </script>
@@ -110,6 +113,59 @@
 				id: "1",
 				role: "assistant",
 				content: "This is a simplified chat interface without tool buttons.",
+				timestamp: new Date()
+			}
+		]
+	}}
+/>
+
+<!-- Custom Header -->
+<Story
+	name="Custom Header"
+	args={{
+		chatTitle: "Team Discussion",
+		participants: [
+			{ id: "1", name: "Alice", isOnline: true },
+			{ id: "2", name: "Bob", isOnline: false },
+			{ id: "3", name: "Charlie", isOnline: true },
+			{ id: "4", name: "You", isOnline: true }
+		],
+		placeholder: "Type your message...",
+		showTools: true,
+		messages: [
+			{
+				id: "1",
+				role: "user",
+				content: "Hey everyone! How's the project going?",
+				timestamp: new Date()
+			},
+			{
+				id: "2",
+				role: "assistant",
+				content: "Great! We've made significant progress on the UI components. The new chat header looks much better now.",
+				timestamp: new Date()
+			}
+		]
+	}}
+/>
+
+<!-- Waalkers Example -->
+<Story
+	name="Waalkers Chat"
+	args={{
+		chatTitle: "Waalkers",
+		participants: [
+			{ id: "1", name: "Fernando", isOnline: true },
+			{ id: "2", name: "~Benko", isOnline: true },
+			{ id: "3", name: "Você", isOnline: true }
+		],
+		placeholder: "Digite sua mensagem...",
+		showTools: true,
+		messages: [
+			{
+				id: "1",
+				role: "assistant",
+				content: "Olá! Como posso ajudar vocês hoje?",
 				timestamp: new Date()
 			}
 		]
