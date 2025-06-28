@@ -27,7 +27,9 @@ export default defineConfig({
 				'**/*.test.*',
 				'**/*.spec.*',
 				'**/stories/**',
-				'**/e2e/**'
+				'**/e2e/**',
+				'src/lib/components/ui/**',
+				'src/lib/paraglide/**'
 			]
 		},
 		projects: [
