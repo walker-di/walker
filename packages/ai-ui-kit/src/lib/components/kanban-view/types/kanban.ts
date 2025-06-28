@@ -6,7 +6,6 @@ export type {
 	KanbanBoard,
 	DragPosition,
 	DragEvent,
-	KanbanViewProps,
 	CardForm,
 	ColumnForm
 } from '../schemas/kanban.js';
@@ -54,7 +53,7 @@ export interface KanbanCardProps {
 	allowRemove?: boolean;
 	allowDrag?: boolean;
 	categories?: KanbanCategory[];
-	
+
 	// Event handlers
 	onUpdate?: (updates: Partial<KanbanCard>) => void;
 	onRemove?: () => void;
@@ -77,7 +76,7 @@ export interface KanbanColumnProps {
 	allowDragCard?: boolean;
 	showCardCount?: boolean;
 	showActions?: boolean;
-	
+
 	// Event handlers
 	onCardAdd?: (card: Partial<KanbanCard>) => void;
 	onCardUpdate?: (cardId: string, updates: Partial<KanbanCard>) => void;

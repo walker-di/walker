@@ -1,20 +1,18 @@
 <script lang="ts">
+	import { flip } from "svelte/animate";
+	import { dndzone } from "svelte-dnd-action";
 	import { Button } from "$lib/components/ui/button/index.js";
 	import { Input } from "$lib/components/ui/input/index.js";
 	import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
-	import { 
-		Plus, 
-		MoreHorizontal, 
-		Edit3, 
-		Trash2, 
-		Save, 
-		X,
-		ChevronLeft,
-		ChevronRight,
-		Minus
-	} from "lucide-svelte";
+	// Icons replaced with text symbols for compatibility
 	import KanbanCard from "./kanban-card.svelte";
-	import type { KanbanColumn, KanbanCategory, KanbanColumnProps, KanbanCard as KanbanCardType } from "../types/kanban.js";
+	import type {
+		KanbanColumn,
+		KanbanCategory,
+		KanbanColumnProps,
+		KanbanCard as KanbanCardType,
+	} from "../types/kanban.js";
+	import type { DndEvent } from "svelte-dnd-action";
 
 	let {
 		column,
@@ -32,23 +30,31 @@
 		onCardMove,
 		onColumnUpdate,
 		onColumnRemove,
-		onColumnMove
-	}: KanbanColumnProps = $props();
+		onColumnMove,
+		onCardDragConsider,
+		onCardDragFinalize,
+	}: KanbanColumnProps & {
+		onCardDragConsider?: (event: CustomEvent<DndEvent<KanbanCardType>>) => void;
+		onCardDragFinalize?: (event: CustomEvent<DndEvent<KanbanCardType>>) => void;
+	} = $props();
+
+	// Drag and drop configuration
+	const flipDurationMs = 200;
 
 	// Local state
 	let isEditing = $state(false);
 	let showColumnActions = $state(false);
 	let showAddCardForm = $state(false);
 	let isDragOver = $state(false);
-	
+
 	// Edit form state
 	let editTitle = $state(column.title);
-	let newCardTitle = $state('');
+	let newCardTitle = $state("");
 
 	// Handle column title edit
 	function toggleColumnEdit() {
 		if (!allowEditColumn) return;
-		
+
 		if (isEditing) {
 			// Save changes
 			if (editTitle.trim() && editTitle !== column.title) {
@@ -58,7 +64,7 @@
 			// Enter edit mode
 			editTitle = column.title;
 		}
-		
+
 		isEditing = !isEditing;
 		showColumnActions = false;
 	}
@@ -66,13 +72,18 @@
 	// Handle add card
 	function handleAddCard() {
 		if (!newCardTitle.trim()) return;
-		
+
 		onCardAdd?.({
 			title: newCardTitle.trim(),
-			category: categories[0] || { id: '1', label: 'Default', color: 'black', bgColor: '#gray' }
+			category: categories[0] || {
+				id: "1",
+				label: "Default",
+				color: "black",
+				bgColor: "#gray",
+			},
 		});
-		
-		newCardTitle = '';
+
+		newCardTitle = "";
 		showAddCardForm = false;
 	}
 
@@ -86,13 +97,13 @@
 		onCardRemove?.(cardId);
 	}
 
-	// Handle card drag start
-	function handleCardDragStart(card: KanbanCardType, cardIndex: number) {
-		onCardMove?.({
-			cardId: card.id,
-			sourcePosition: { columnId: column.id, cardIndex },
-			targetPosition: { columnId: column.id, cardIndex }
-		});
+	// Handle drag events
+	function handleCardDragConsiderEvent(event: CustomEvent<DndEvent<any>>) {
+		onCardDragConsider?.(event);
+	}
+
+	function handleCardDragFinalizeEvent(event: CustomEvent<DndEvent<any>>) {
+		onCardDragFinalize?.(event);
 	}
 
 	// Handle column remove
@@ -102,20 +113,20 @@
 	}
 
 	// Handle column move
-	function handleColumnMove(direction: 'left' | 'right') {
+	function handleColumnMove(direction: "left" | "right") {
 		onColumnMove?.(direction);
 	}
 
 	// Handle key press
 	function handleKeyPress(event: KeyboardEvent) {
-		if (event.key === 'Enter') {
+		if (event.key === "Enter") {
 			event.preventDefault();
 			if (isEditing) {
 				toggleColumnEdit();
 			} else if (showAddCardForm) {
 				handleAddCard();
 			}
-		} else if (event.key === 'Escape') {
+		} else if (event.key === "Escape") {
 			isEditing = false;
 			showAddCardForm = false;
 			showColumnActions = false;
@@ -141,17 +152,17 @@
 	}
 
 	// Move card up/down within column
-	function moveCard(cardId: string, direction: 'up' | 'down') {
-		const cardIndex = column.cards.findIndex(card => card.id === cardId);
+	function moveCard(cardId: string, direction: "up" | "down") {
+		const cardIndex = column.cards.findIndex((card) => card.id === cardId);
 		if (cardIndex === -1) return;
-		
-		const newIndex = direction === 'up' ? cardIndex - 1 : cardIndex + 1;
+
+		const newIndex = direction === "up" ? cardIndex - 1 : cardIndex + 1;
 		if (newIndex < 0 || newIndex >= column.cards.length) return;
-		
+
 		onCardMove?.({
 			cardId,
 			sourcePosition: { columnId: column.id, cardIndex },
-			targetPosition: { columnId: column.id, cardIndex: newIndex }
+			targetPosition: { columnId: column.id, cardIndex: newIndex },
 		});
 	}
 </script>
@@ -165,16 +176,20 @@
 	ondragover={handleDragOver}
 	ondragleave={handleDragLeave}
 	ondrop={handleDrop}
+	role="region"
+	aria-label="Kanban column: {column.title}"
 >
 	<!-- Column Header -->
-	<div 
+	<div
 		class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700"
-		onmouseenter={() => showColumnActions = true}
+		onmouseenter={() => (showColumnActions = true)}
 		onmouseleave={() => {
 			if (!isEditing) {
 				showColumnActions = false;
 			}
 		}}
+		role="banner"
+		aria-label="Column header for {column.title}"
 	>
 		<div class="flex items-center gap-2 flex-1">
 			{#if isEditing}
@@ -190,9 +205,11 @@
 					{column.title}
 				</h2>
 			{/if}
-			
+
 			{#if showCardCount}
-				<span class="text-sm text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded-full">
+				<span
+					class="text-sm text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded-full"
+				>
 					{column.cards.length}
 				</span>
 			{/if}
@@ -208,15 +225,15 @@
 						class="h-8 w-8 text-green-600 hover:text-green-700"
 						onclick={toggleColumnEdit}
 					>
-						<Save class="h-4 w-4" />
+						✓
 					</Button>
 					<Button
 						variant="ghost"
 						size="icon"
 						class="h-8 w-8 text-gray-600 hover:text-gray-700"
-						onclick={() => isEditing = false}
+						onclick={() => (isEditing = false)}
 					>
-						<X class="h-4 w-4" />
+						×
 					</Button>
 				{:else if showColumnActions}
 					{#if allowEditColumn}
@@ -226,21 +243,21 @@
 							class="h-8 w-8"
 							onclick={toggleColumnEdit}
 						>
-							<Edit3 class="h-4 w-4" />
+							✏️
 						</Button>
 					{/if}
-					
+
 					{#if allowAddCard}
 						<Button
 							variant="ghost"
 							size="icon"
 							class="h-8 w-8"
-							onclick={() => showAddCardForm = !showAddCardForm}
+							onclick={() => (showAddCardForm = !showAddCardForm)}
 						>
-							<Plus class="h-4 w-4" />
+							+
 						</Button>
 					{/if}
-					
+
 					{#if allowRemoveColumn}
 						<Button
 							variant="ghost"
@@ -248,40 +265,36 @@
 							class="h-8 w-8 text-red-600 hover:text-red-700"
 							onclick={handleColumnRemove}
 						>
-							<Trash2 class="h-4 w-4" />
+							🗑️
 						</Button>
 					{/if}
-					
+
 					<!-- Column Move Actions -->
 					{#if onColumnMove}
-						<div class="flex items-center border-l border-gray-300 dark:border-gray-600 ml-1 pl-1">
+						<div
+							class="flex items-center border-l border-gray-300 dark:border-gray-600 ml-1 pl-1"
+						>
 							<Button
 								variant="ghost"
 								size="icon"
 								class="h-8 w-8"
-								onclick={() => handleColumnMove('left')}
+								onclick={() => handleColumnMove("left")}
 								disabled={index === 0}
 							>
-								<ChevronLeft class="h-4 w-4" />
+								←
 							</Button>
 							<Button
 								variant="ghost"
 								size="icon"
 								class="h-8 w-8"
-								onclick={() => handleColumnMove('right')}
+								onclick={() => handleColumnMove("right")}
 							>
-								<ChevronRight class="h-4 w-4" />
+								→
 							</Button>
 						</div>
 					{/if}
 				{:else}
-					<Button
-						variant="ghost"
-						size="icon"
-						class="h-8 w-8"
-					>
-						<MoreHorizontal class="h-4 w-4" />
-					</Button>
+					<Button variant="ghost" size="icon" class="h-8 w-8">⋯</Button>
 				{/if}
 			</div>
 		{/if}
@@ -289,7 +302,9 @@
 
 	<!-- Add Card Form -->
 	{#if showAddCardForm}
-		<div class="p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+		<div
+			class="p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
+		>
 			<div class="flex gap-2">
 				<Input
 					bind:value={newCardTitle}
@@ -310,10 +325,10 @@
 					size="sm"
 					onclick={() => {
 						showAddCardForm = false;
-						newCardTitle = '';
+						newCardTitle = "";
 					}}
 				>
-					<X class="h-4 w-4" />
+					×
 				</Button>
 			</div>
 		</div>
@@ -322,7 +337,19 @@
 	<!-- Cards Area -->
 	<div class="flex-1 overflow-hidden">
 		<ScrollArea class="h-full">
-			<div class="p-4 space-y-3">
+			<div
+				class="p-4 space-y-3 min-h-full"
+				use:dndzone={{
+					items: column.cards,
+					flipDurationMs,
+					dragDisabled: !allowDragCard,
+					dropTargetStyle: { outline: "rgba(59, 130, 246, 0.5) solid 2px" },
+				}}
+				onconsider={handleCardDragConsiderEvent}
+				onfinalize={handleCardDragFinalizeEvent}
+				role="list"
+				aria-label="Cards in {column.title}"
+			>
 				{#if column.cards.length === 0}
 					<div class="text-center py-8 text-gray-500 dark:text-gray-400">
 						<div class="text-4xl mb-2">📋</div>
@@ -332,29 +359,33 @@
 								variant="ghost"
 								size="sm"
 								class="mt-2"
-								onclick={() => showAddCardForm = true}
+								onclick={() => (showAddCardForm = true)}
 							>
-								<Plus class="h-4 w-4 mr-1" />
-								Add first card
+								+ Add first card
 							</Button>
 						{/if}
 					</div>
 				{:else}
 					{#each column.cards as card, cardIndex (card.id)}
-						<KanbanCard
-							{card}
-							columnId={column.id}
-							index={cardIndex}
-							{categories}
-							allowEdit={allowEditColumn}
-							allowRemove={allowRemoveColumn}
-							allowDrag={allowDragCard}
-							onUpdate={(updates) => handleCardUpdate(card.id, updates)}
-							onRemove={() => handleCardRemove(card.id)}
-							onDragStart={() => handleCardDragStart(card, cardIndex)}
-							onMoveUp={cardIndex > 0 ? () => moveCard(card.id, 'up') : undefined}
-							onMoveDown={cardIndex < column.cards.length - 1 ? () => moveCard(card.id, 'down') : undefined}
-						/>
+						<div animate:flip={{ duration: flipDurationMs }}>
+							<KanbanCard
+								{card}
+								columnId={column.id}
+								index={cardIndex}
+								{categories}
+								allowEdit={allowEditColumn}
+								allowRemove={allowRemoveColumn}
+								allowDrag={allowDragCard}
+								onUpdate={(updates) => handleCardUpdate(card.id, updates)}
+								onRemove={() => handleCardRemove(card.id)}
+								onMoveUp={cardIndex > 0
+									? () => moveCard(card.id, "up")
+									: undefined}
+								onMoveDown={cardIndex < column.cards.length - 1
+									? () => moveCard(card.id, "down")
+									: undefined}
+							/>
+						</div>
 					{/each}
 				{/if}
 			</div>
@@ -363,8 +394,12 @@
 
 	<!-- Drop Zone Indicator -->
 	{#if isDragOver}
-		<div class="absolute inset-0 bg-blue-500/10 border-2 border-dashed border-blue-500 rounded-lg flex items-center justify-center pointer-events-none">
-			<div class="bg-blue-500 text-white px-3 py-1 rounded-md text-sm font-medium">
+		<div
+			class="absolute inset-0 bg-blue-500/10 border-2 border-dashed border-blue-500 rounded-lg flex items-center justify-center pointer-events-none"
+		>
+			<div
+				class="bg-blue-500 text-white px-3 py-1 rounded-md text-sm font-medium"
+			>
 				Drop card here
 			</div>
 		</div>
