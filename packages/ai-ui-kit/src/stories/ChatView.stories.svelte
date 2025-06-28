@@ -7,6 +7,11 @@
 		title: 'AI UI Kit/ChatView',
 		component: ChatView,
 		tags: ['autodocs'],
+		parameters: {
+			layout: 'fullscreen',
+			backgrounds: { default: 'dark' }
+		},
+
 		argTypes: {
 			messages: {
 				control: 'object',

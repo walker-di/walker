@@ -6,18 +6,16 @@
 	import { Badge } from "$lib/components/ui/badge/index.js";
 	
 	// Lucide icons
-	import {
-		Copy,
-		ThumbsUp,
-		ThumbsDown,
-		Volume2,
-		RotateCcw,
-		Download,
-		Plus,
-		Settings,
-		Mic,
-		MicOff
-	} from "lucide-svelte";
+	import Copy from "lucide-svelte/icons/copy";
+	import ThumbsUp from "lucide-svelte/icons/thumbs-up";
+	import ThumbsDown from "lucide-svelte/icons/thumbs-down";
+	import Volume2 from "lucide-svelte/icons/volume-2";
+	import RotateCcw from "lucide-svelte/icons/rotate-ccw";
+	import Download from "lucide-svelte/icons/download";
+	import Plus from "lucide-svelte/icons/plus";
+	import Settings from "lucide-svelte/icons/settings";
+	import Mic from "lucide-svelte/icons/mic";
+	import MicOff from "lucide-svelte/icons/mic-off";
 
 	export interface ChatMessage {
 		id: string;
@@ -205,7 +203,7 @@
 						{disabled}
 						onkeydown={handleKeydown}
 						class="min-h-[52px] resize-none border-gray-600 bg-gray-800 pr-20 text-white placeholder:text-gray-400 focus:border-gray-500"
-						rows="1"
+						rows={1}
 					/>
 					
 					<div class="absolute bottom-2 right-2 flex items-center gap-1">
