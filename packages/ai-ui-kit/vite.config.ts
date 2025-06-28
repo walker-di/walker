@@ -15,6 +15,21 @@ export default defineConfig({
 		})
 	],
 	test: {
+		coverage: {
+			provider: 'v8',
+			reporter: ['text', 'json', 'json-summary', 'html'],
+			reportsDirectory: './coverage',
+			exclude: [
+				'node_modules/**',
+				'dist/**',
+				'**/*.d.ts',
+				'**/*.config.*',
+				'**/*.test.*',
+				'**/*.spec.*',
+				'**/stories/**',
+				'**/e2e/**'
+			]
+		},
 		projects: [
 			{
 				extends: './vite.config.ts',

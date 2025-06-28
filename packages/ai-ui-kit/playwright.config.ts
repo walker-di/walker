@@ -11,5 +11,10 @@ export default defineConfig({
 	timeout: 30 * 1000,
 	use: {
 		baseURL: 'http://localhost:5173'
-	}
+	},
+	reporter: [
+		['html', { outputFolder: 'playwright-report' }],
+		['json', { outputFile: 'playwright-results.json' }],
+		['github']
+	]
 });
