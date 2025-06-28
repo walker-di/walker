@@ -16,6 +16,7 @@
 	import Settings from "lucide-svelte/icons/settings";
 	import Mic from "lucide-svelte/icons/mic";
 	import MicOff from "lucide-svelte/icons/mic-off";
+	import Send from "lucide-svelte/icons/send";
 
 	export interface ChatMessage {
 		id: string;
@@ -217,7 +218,7 @@
 								<Settings class="h-4 w-4" />
 							</Button>
 						{/if}
-						
+
 						<Button
 							variant="ghost"
 							size="icon"
@@ -229,6 +230,16 @@
 							{:else}
 								<Mic class="h-4 w-4" />
 							{/if}
+						</Button>
+
+						<Button
+							variant="ghost"
+							size="icon"
+							class="h-8 w-8 text-gray-400 hover:text-white"
+							onclick={handleSend}
+							disabled={!inputValue.trim() || disabled}
+						>
+							<Send class="h-4 w-4" />
 						</Button>
 					</div>
 				</div>
