@@ -18,6 +18,7 @@
   import Code from "lucide-svelte/icons/code";
   import Github from "lucide-svelte/icons/github";
   import ExternalLink from "lucide-svelte/icons/external-link";
+  import Network from "lucide-svelte/icons/network";
   import Volume2 from "lucide-svelte/icons/volume-2";
   import Settings from "lucide-svelte/icons/settings";
 
@@ -135,7 +136,11 @@
       <div class="flex items-center gap-4">
         <Button variant="ghost" href="/chat-demo">
           <ExternalLink class="w-4 h-4" />
-          Live Demo
+          Chat Demo
+        </Button>
+        <Button variant="ghost" href="/knowledge-graph-demo">
+          <Network class="w-4 h-4" />
+          Graph Demo
         </Button>
         <Button variant="outline" href="https://github.com/walker-di/walker">
           <Github class="w-4 h-4" />

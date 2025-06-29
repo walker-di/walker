@@ -1,6 +1,7 @@
 // Reexport your entry components here
 export { default as ChatView } from './components/chat-view/chat-view.svelte';
 export { default as KanbanView } from './components/kanban-view/kanban-view.svelte';
+export { default as KnowledgeGraphView } from './components/knowledge-graph-view/knowledge-graph-view.svelte';
 
 // Chat view sub-components
 export { default as FileUpload } from './components/chat-view/components/file-upload.svelte';
@@ -14,6 +15,12 @@ export { default as ConversationManager } from './components/chat-view/component
 // Kanban view sub-components
 export { default as KanbanCard } from './components/kanban-view/components/kanban-card.svelte';
 export { default as KanbanColumn } from './components/kanban-view/components/kanban-column.svelte';
+
+// Knowledge graph view sub-components
+export { default as GraphControls } from './components/knowledge-graph-view/components/graph-controls.svelte';
+export { default as GraphLegend } from './components/knowledge-graph-view/components/graph-legend.svelte';
+export { default as GraphStats } from './components/knowledge-graph-view/components/graph-stats.svelte';
+export { default as GraphToolbar } from './components/knowledge-graph-view/components/graph-toolbar.svelte';
 
 // Re-export specific UI components to avoid conflicts
 export { Button, buttonVariants } from './components/ui/button/index.js';
@@ -44,3 +51,35 @@ export {
   KanbanCategorySchema,
   KanbanViewPropsSchema
 } from './components/kanban-view/types/index.js';
+
+// Knowledge graph types and schemas
+export type {
+  GraphNode,
+  GraphEdge,
+  GraphData,
+  LayoutConfig,
+  GraphCategory,
+  ClusterConfig,
+  SelectionState,
+  ViewportState,
+  SearchConfig,
+  FilterConfig,
+  ExportOptions,
+  GraphEvent,
+  NodeEvent,
+  EdgeEvent,
+  KnowledgeGraphViewProps
+} from './components/knowledge-graph-view/types/index.js';
+
+export {
+  GraphNodeSchema,
+  GraphEdgeSchema,
+  GraphDataSchema,
+  LayoutConfigSchema,
+  GraphCategorySchema,
+  ClusterConfigSchema,
+  SearchConfigSchema,
+  FilterConfigSchema,
+  ExportOptionsSchema,
+  KnowledgeGraphViewPropsSchema
+} from './components/knowledge-graph-view/types/index.js';
