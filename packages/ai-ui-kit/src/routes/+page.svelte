@@ -142,6 +142,10 @@
           <Network class="w-4 h-4" />
           Graph Demo
         </Button>
+        <Button variant="ghost" href="/canvas-demo">
+          <Palette class="w-4 h-4" />
+          Canvas Demo
+        </Button>
         <Button variant="outline" href="https://github.com/walker-di/walker">
           <Github class="w-4 h-4" />
           GitHub
