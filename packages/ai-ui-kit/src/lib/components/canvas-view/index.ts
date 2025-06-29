@@ -1,0 +1,10 @@
+export { default as CanvasView } from "./canvas-view.svelte";
+export { default as CanvasToolbar } from "./components/canvas-toolbar.svelte";
+export { default as CanvasHeader } from "./components/canvas-header.svelte";
+export { default as CanvasSidebar } from "./components/canvas-sidebar.svelte";
+export { default as CanvasSidebarNav } from "./components/canvas-sidebar-nav.svelte";
+export { CanvasService } from "./services/canvas-service.svelte.js";
+export { CanvasZoomPan } from "./services/canvas-zoom-pan.svelte.js";
+export { CanvasViewModel } from "./canvas-view-model.svelte.js";
+export * from "./utils/canvas-tools.js";
+export type * from "./types/canvas.js";

@@ -2,6 +2,7 @@
 export { default as ChatView } from './components/chat-view/chat-view.svelte';
 export { default as KanbanView } from './components/kanban-view/kanban-view.svelte';
 export { default as KnowledgeGraphView } from './components/knowledge-graph-view/knowledge-graph-view.svelte';
+export { default as CanvasView } from './components/canvas-view/canvas-view.svelte';
 
 // Chat view sub-components
 export { default as FileUpload } from './components/chat-view/components/file-upload.svelte';
@@ -21,6 +22,12 @@ export { default as GraphControls } from './components/knowledge-graph-view/comp
 export { default as GraphLegend } from './components/knowledge-graph-view/components/graph-legend.svelte';
 export { default as GraphStats } from './components/knowledge-graph-view/components/graph-stats.svelte';
 export { default as GraphToolbar } from './components/knowledge-graph-view/components/graph-toolbar.svelte';
+
+// Canvas view sub-components
+export { default as CanvasToolbar } from './components/canvas-view/components/canvas-toolbar.svelte';
+export { default as CanvasHeader } from './components/canvas-view/components/canvas-header.svelte';
+export { default as CanvasSidebar } from './components/canvas-view/components/canvas-sidebar.svelte';
+export { default as CanvasSidebarNav } from './components/canvas-view/components/canvas-sidebar-nav.svelte';
 
 // Re-export specific UI components to avoid conflicts
 export { Button, buttonVariants } from './components/ui/button/index.js';
@@ -83,3 +90,11 @@ export {
   ExportOptionsSchema,
   KnowledgeGraphViewPropsSchema
 } from './components/knowledge-graph-view/types/index.js';
+
+// Canvas view types
+export type {
+  CanvasViewProps,
+  CanvasToolProps,
+  CanvasObject,
+  CanvasLayer
+} from './components/canvas-view/types/canvas.js';

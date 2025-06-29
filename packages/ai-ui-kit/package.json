@@ -94,6 +94,7 @@
     "cytoscape-cose-bilkent": "^4.1.0",
     "cytoscape-dagre": "^2.5.0",
     "cytoscape-fcose": "^2.2.0",
+    "fabric": "^6.7.0",
     "lucide-svelte": "^0.525.0",
     "svelte-dnd-action": "^0.9.63",
     "zod": "^3.25.67"
