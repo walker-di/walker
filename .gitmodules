@@ -1,0 +1,3 @@
+[submodule "affine"]
+	path = affine
+	url = https://github.com/toeverything/AFFiNE

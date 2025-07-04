@@ -1,0 +1,17 @@
+{
+  "name": "walker-lib",
+  "version": "1.0.0",
+  "description": "A comprehensive abstraction framework for AI systems, providing standardized components and services for building modern AI applications. Walker aims to simplify AI development by offering reusable UI components, service integrations, and workflow orchestration tools for AI researchers and engineers.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "example": "examples"
+  },
+  "scripts": {
+    "update:affine": "git submodule update --remote affine",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
