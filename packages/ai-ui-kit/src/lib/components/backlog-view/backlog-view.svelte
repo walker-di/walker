@@ -6,8 +6,7 @@
 
 	import BacklogSidebar from "./components/backlog-sidebar.svelte";
 	import EpicCard from "./components/epic-card.svelte";
-	import ReleaseSwimLane from "./components/release-swim-lane.svelte";
-	import UnscheduledSwimLane from "./components/unscheduled-swim-lane.svelte";
+	import StoryCard from "./components/story-card.svelte";
 	import { BacklogViewModel } from "./backlog-view-model.svelte.js";
 	import type { BacklogViewProps } from "./types/backlog.js";
 
@@ -81,7 +80,8 @@
 					<Button
 						variant="outline"
 						onclick={() =>
-							(backlogViewModel.showAddEpicForm = !backlogViewModel.showAddEpicForm)}
+							(backlogViewModel.showAddEpicForm =
+								!backlogViewModel.showAddEpicForm)}
 					>
 						+ Add Epic
 					</Button>
@@ -90,7 +90,8 @@
 					<Button
 						variant="outline"
 						onclick={() =>
-							(backlogViewModel.showAddReleaseForm = !backlogViewModel.showAddReleaseForm)}
+							(backlogViewModel.showAddReleaseForm =
+								!backlogViewModel.showAddReleaseForm)}
 					>
 						+ Add Release
 					</Button>
@@ -142,7 +143,8 @@
 									No epics yet
 								</h3>
 								<p class="text-gray-600 dark:text-gray-400 mb-4">
-									Start by creating your first epic to organize your user stories
+									Start by creating your first epic to organize your user
+									stories
 								</p>
 								{#if props.allowAddEpic !== false}
 									<Button
@@ -154,129 +156,299 @@
 							</div>
 						</div>
 					{:else}
-						<!-- Backlog Content -->
-						<div class="space-y-6">
-							<!-- Epics Row -->
-							<div class="space-y-4">
-								<h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-									Epics
-								</h2>
-								<div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+						<!-- Story Map Grid Layout -->
+						<div class="flex flex-col h-full">
+							<!-- Epic Headers Row -->
+							<div
+								class="flex border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 sticky top-0 z-10"
+							>
+								<!-- Empty corner cell for release labels -->
+								<div
+									class="w-48 flex-shrink-0 p-4 border-r border-gray-200 dark:border-gray-800"
+								>
+									<h3
+										class="text-sm font-semibold text-gray-900 dark:text-gray-100"
+									>
+										Releases / Epics
+									</h3>
+								</div>
+
+								<!-- Epic columns -->
+								<div class="flex-1 flex">
 									{#each backlogViewModel.epics as epic, index (epic.id)}
-										<EpicCard
-											{epic}
-											{index}
-											allowEdit={props.allowAddEpic !== false}
-											allowRemove={props.allowRemoveEpic !== false}
-											allowDrag={props.allowDragDrop !== false}
-											showActions={true}
-											onUpdate={(updates) =>
-												backlogViewModel.updateEpicData(epic.id, updates)}
-											onRemove={() => backlogViewModel.removeEpicData(epic.id)}
-											onDragStart={(event) => {
-												// Handle epic drag start
-												console.log("Epic drag start:", event);
-											}}
-											onDragEnd={(event) => {
-												// Handle epic drag end
-												console.log("Epic drag end:", event);
-											}}
-											onMoveLeft={() => {
-												// Handle epic move left
-												console.log("Epic move left");
-											}}
-											onMoveRight={() => {
-												// Handle epic move right
-												console.log("Epic move right");
-											}}
-										/>
+										<div
+											class="flex-1 min-w-48 p-3 border-r border-gray-200 dark:border-gray-800"
+										>
+											<EpicCard
+												{epic}
+												{index}
+												allowEdit={props.allowAddEpic !== false}
+												allowRemove={props.allowRemoveEpic !== false}
+												allowDrag={props.allowDragDrop !== false}
+												showActions={true}
+												onUpdate={(updates) =>
+													backlogViewModel.updateEpicData(epic.id, updates)}
+												onRemove={() =>
+													backlogViewModel.removeEpicData(epic.id)}
+												onDragStart={(event) => {
+													// Handle epic drag start
+													console.log("Epic drag start:", event);
+												}}
+												onDragEnd={(event) => {
+													// Handle epic drag end
+													console.log("Epic drag end:", event);
+												}}
+												onMoveLeft={() => {
+													// Handle epic move left
+													console.log("Epic move left");
+												}}
+												onMoveRight={() => {
+													// Handle epic move right
+													console.log("Epic move right");
+												}}
+											/>
+										</div>
 									{/each}
 
-									<!-- Add Epic Button (when not in form mode) -->
+									<!-- Add Epic Column -->
 									{#if !backlogViewModel.showAddEpicForm && props.allowAddEpic !== false}
-										<button
-											class="flex items-center justify-center h-32 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-gray-500 dark:text-gray-400 hover:border-gray-400 dark:hover:border-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
-											onclick={() => (backlogViewModel.showAddEpicForm = true)}
-										>
-											<div class="text-center">
-												<div class="text-4xl mb-2">+</div>
-												<span class="text-sm font-medium">Add Epic</span>
-											</div>
-										</button>
+										<div class="w-48 flex-shrink-0 p-3">
+											<button
+												class="w-full h-32 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-gray-500 dark:text-gray-400 hover:border-gray-400 dark:hover:border-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+												onclick={() =>
+													(backlogViewModel.showAddEpicForm = true)}
+											>
+												<div class="text-center">
+													<div class="text-2xl mb-1">+</div>
+													<span class="text-xs font-medium">Add Epic</span>
+												</div>
+											</button>
+										</div>
 									{/if}
 								</div>
 							</div>
 
-							<!-- Releases Section -->
-							<div class="space-y-4">
-								{#each backlogViewModel.releases.filter(r => r.isScheduled) as release, index (release.id)}
-									<ReleaseSwimLane
-										{release}
-										epics={backlogViewModel.epics}
-										userStories={backlogViewModel.getStoriesForRelease(release.id)}
-										{index}
-										allowAddStory={props.allowAddStory !== false}
-										allowRemoveRelease={props.allowRemoveRelease !== false}
-										allowEditRelease={props.allowAddRelease !== false}
-										allowDragStory={props.allowDragDrop !== false}
-										showStoryPoints={props.showStoryPoints !== false}
-										showActions={true}
-										onStoryAdd={(epicId, story) =>
-											backlogViewModel.addUserStory(epicId, release.id, story)}
-										onStoryUpdate={(storyId, updates) =>
-											backlogViewModel.updateUserStoryData(storyId, updates)}
-										onStoryRemove={(storyId) =>
-											backlogViewModel.removeUserStoryData(storyId)}
-										onStoryMove={(event) => {
-											// Handle story drag and drop
-											console.log("Story moved:", event);
-										}}
-										onReleaseUpdate={(updates) =>
-											backlogViewModel.updateReleaseData(release.id, updates)}
-										onReleaseRemove={() =>
-											backlogViewModel.removeReleaseData(release.id)}
-										onReleaseMove={(direction) => {
-											// Handle release reordering
-											console.log("Release move:", direction);
-										}}
-									/>
+							<!-- Story Grid Rows -->
+							<div class="flex-1 overflow-auto">
+								<!-- Scheduled Releases -->
+								{#each backlogViewModel.releases.filter((r) => r.isScheduled) as release, releaseIndex (release.id)}
+									<div
+										class="flex border-b border-gray-200 dark:border-gray-800 min-h-32"
+									>
+										<!-- Release Label -->
+										<div
+											class="w-48 flex-shrink-0 p-4 border-r border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800"
+										>
+											<div class="flex items-center gap-2">
+												<div
+													class="w-3 h-3 rounded-full"
+													style="background-color: {release.color ||
+														'#6B7280'};"
+												></div>
+												<h4
+													class="font-semibold text-gray-900 dark:text-gray-100"
+												>
+													{release.name}
+												</h4>
+											</div>
+											{#if release.version}
+												<div
+													class="text-xs text-gray-500 dark:text-gray-400 mt-1"
+												>
+													v{release.version}
+												</div>
+											{/if}
+											{#if release.targetDate}
+												<div
+													class="text-xs text-gray-500 dark:text-gray-400 mt-1"
+												>
+													📅 {release.targetDate.toLocaleDateString()}
+												</div>
+											{/if}
+										</div>
+
+										<!-- Story cells for each epic -->
+										<div class="flex-1 flex">
+											{#each backlogViewModel.epics as epic (epic.id)}
+												<div
+													class="flex-1 min-w-48 p-3 border-r border-gray-200 dark:border-gray-800"
+												>
+													<div class="space-y-2">
+														{#each backlogViewModel
+															.getStoriesForRelease(release.id)
+															.filter((s) => s.epicId === epic.id) as story, storyIndex (story.id)}
+															<StoryCard
+																{story}
+																epicId={epic.id}
+																releaseId={release.id}
+																index={storyIndex}
+																allowEdit={props.allowAddStory !== false}
+																allowRemove={props.allowRemoveStory !== false}
+																allowDrag={props.allowDragDrop !== false}
+																showStoryPoints={props.showStoryPoints !==
+																	false}
+																showActions={true}
+																onUpdate={(updates) =>
+																	backlogViewModel.updateUserStoryData(
+																		story.id,
+																		updates,
+																	)}
+																onRemove={() =>
+																	backlogViewModel.removeUserStoryData(
+																		story.id,
+																	)}
+																onDragStart={(event) => {
+																	// Handle story drag start
+																	console.log("Story drag start:", event);
+																}}
+																onDragEnd={(event) => {
+																	// Handle story drag end
+																	console.log("Story drag end:", event);
+																}}
+																onMoveUp={() => {
+																	// Handle story move up
+																	console.log("Story move up");
+																}}
+																onMoveDown={() => {
+																	// Handle story move down
+																	console.log("Story move down");
+																}}
+															/>
+														{/each}
+
+														<!-- Add story button for this epic/release intersection -->
+														{#if props.allowAddStory !== false}
+															<button
+																class="w-full p-2 border border-dashed border-gray-300 dark:border-gray-600 rounded-md text-gray-500 dark:text-gray-400 hover:border-gray-400 dark:hover:border-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors text-xs"
+																onclick={() =>
+																	backlogViewModel.addUserStory(
+																		epic.id,
+																		release.id,
+																		{ title: `New story for ${epic.title}` },
+																	)}
+															>
+																+ Add Story
+															</button>
+														{/if}
+													</div>
+												</div>
+											{/each}
+										</div>
+									</div>
 								{/each}
 
 								<!-- Unscheduled Section -->
 								{#if props.showUnscheduled !== false}
-									<UnscheduledSwimLane
-										epics={backlogViewModel.epics}
-										userStories={backlogViewModel.getUnscheduledStories()}
-										allowAddStory={props.allowAddStory !== false}
-										allowDragStory={props.allowDragDrop !== false}
-										showStoryPoints={props.showStoryPoints !== false}
-										showActions={true}
-										onStoryAdd={(epicId, story) =>
-											backlogViewModel.addUserStory(epicId, undefined, story)}
-										onStoryUpdate={(storyId, updates) =>
-											backlogViewModel.updateUserStoryData(storyId, updates)}
-										onStoryRemove={(storyId) =>
-											backlogViewModel.removeUserStoryData(storyId)}
-										onStoryMove={(event) => {
-											// Handle story drag and drop
-											console.log("Story moved:", event);
-										}}
-									/>
+									<div
+										class="flex border-b border-gray-200 dark:border-gray-800 min-h-32"
+									>
+										<!-- Unscheduled Label -->
+										<div
+											class="w-48 flex-shrink-0 p-4 border-r border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800"
+										>
+											<div class="flex items-center gap-2">
+												<div class="w-3 h-3 rounded-full bg-gray-400"></div>
+												<h4
+													class="font-semibold text-gray-900 dark:text-gray-100"
+												>
+													Unscheduled
+												</h4>
+											</div>
+											<div
+												class="text-xs text-gray-500 dark:text-gray-400 mt-1"
+											>
+												Not assigned to release
+											</div>
+										</div>
+
+										<!-- Unscheduled story cells for each epic -->
+										<div class="flex-1 flex">
+											{#each backlogViewModel.epics as epic (epic.id)}
+												<div
+													class="flex-1 min-w-48 p-3 border-r border-gray-200 dark:border-gray-800"
+												>
+													<div class="space-y-2">
+														{#each backlogViewModel
+															.getUnscheduledStories()
+															.filter((s) => s.epicId === epic.id) as story, storyIndex (story.id)}
+															<StoryCard
+																{story}
+																epicId={epic.id}
+																index={storyIndex}
+																allowEdit={props.allowAddStory !== false}
+																allowRemove={props.allowRemoveStory !== false}
+																allowDrag={props.allowDragDrop !== false}
+																showStoryPoints={props.showStoryPoints !==
+																	false}
+																showActions={true}
+																onUpdate={(updates) =>
+																	backlogViewModel.updateUserStoryData(
+																		story.id,
+																		updates,
+																	)}
+																onRemove={() =>
+																	backlogViewModel.removeUserStoryData(
+																		story.id,
+																	)}
+																onDragStart={(event) => {
+																	// Handle story drag start
+																	console.log("Story drag start:", event);
+																}}
+																onDragEnd={(event) => {
+																	// Handle story drag end
+																	console.log("Story drag end:", event);
+																}}
+																onMoveUp={() => {
+																	// Handle story move up
+																	console.log("Story move up");
+																}}
+																onMoveDown={() => {
+																	// Handle story move down
+																	console.log("Story move down");
+																}}
+															/>
+														{/each}
+
+														<!-- Add unscheduled story button for this epic -->
+														{#if props.allowAddStory !== false}
+															<button
+																class="w-full p-2 border border-dashed border-gray-300 dark:border-gray-600 rounded-md text-gray-500 dark:text-gray-400 hover:border-gray-400 dark:hover:border-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors text-xs"
+																onclick={() =>
+																	backlogViewModel.addUserStory(
+																		epic.id,
+																		undefined,
+																		{ title: `New story for ${epic.title}` },
+																	)}
+															>
+																+ Add Story
+															</button>
+														{/if}
+													</div>
+												</div>
+											{/each}
+										</div>
+									</div>
 								{/if}
 
-								<!-- Add Release Form -->
+								<!-- Add Release Row -->
 								{#if backlogViewModel.showAddReleaseForm}
-									<div class="p-4 border border-gray-200 dark:border-gray-800 rounded-lg bg-white dark:bg-gray-900">
-										<div class="flex gap-2">
+									<div
+										class="flex border-b border-gray-200 dark:border-gray-800"
+									>
+										<div
+											class="w-48 flex-shrink-0 p-4 border-r border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800"
+										>
 											<Input
 												placeholder="Release name..."
-												class="flex-1"
+												class="text-sm"
 												onkeydown={(event) => {
 													if (event.key === "Enter") {
 														event.preventDefault();
 														const input = event.target as HTMLInputElement;
 														if (input.value.trim()) {
-															backlogViewModel.addRelease({ name: input.value.trim() });
+															backlogViewModel.addRelease({
+																name: input.value.trim(),
+															});
 															input.value = "";
 															backlogViewModel.showAddReleaseForm = false;
 														}
@@ -286,27 +458,51 @@
 												}}
 												autofocus
 											/>
-											<Button
-												onclick={(event) => {
-													const input = event.target?.closest('.flex')?.querySelector('input') as HTMLInputElement;
-													if (input?.value.trim()) {
-														backlogViewModel.addRelease({ name: input.value.trim() });
-														input.value = "";
+											<div class="flex gap-1 mt-2">
+												<Button
+													size="sm"
+													onclick={(event) => {
+														const input = event.target
+															?.closest(".w-48")
+															?.querySelector("input") as HTMLInputElement;
+														if (input?.value.trim()) {
+															backlogViewModel.addRelease({
+																name: input.value.trim(),
+															});
+															input.value = "";
+															backlogViewModel.showAddReleaseForm = false;
+														}
+													}}
+												>
+													Add
+												</Button>
+												<Button
+													size="sm"
+													variant="ghost"
+													onclick={() => {
 														backlogViewModel.showAddReleaseForm = false;
-													}
-												}}
-											>
-												Add
-											</Button>
-											<Button
-												variant="ghost"
-												onclick={() => {
-													backlogViewModel.showAddReleaseForm = false;
-												}}
-											>
-												×
-											</Button>
+													}}
+												>
+													×
+												</Button>
+											</div>
 										</div>
+										<div class="flex-1"></div>
+									</div>
+								{:else if props.allowAddRelease !== false}
+									<div class="flex">
+										<div
+											class="w-48 flex-shrink-0 p-4 border-r border-gray-200 dark:border-gray-800"
+										>
+											<button
+												class="w-full p-2 border border-dashed border-gray-300 dark:border-gray-600 rounded-md text-gray-500 dark:text-gray-400 hover:border-gray-400 dark:hover:border-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors text-sm"
+												onclick={() =>
+													(backlogViewModel.showAddReleaseForm = true)}
+											>
+												+ Add Release
+											</button>
+										</div>
+										<div class="flex-1"></div>
 									</div>
 								{/if}
 							</div>
