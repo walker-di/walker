@@ -3,6 +3,7 @@ export { default as ChatView } from './components/chat-view/chat-view.svelte';
 export { default as KanbanView } from './components/kanban-view/kanban-view.svelte';
 export { default as KnowledgeGraphView } from './components/knowledge-graph-view/knowledge-graph-view.svelte';
 export { default as CanvasView } from './components/canvas-view/canvas-view.svelte';
+export { default as BacklogView } from './components/backlog-view/backlog-view.svelte';
 
 // Chat view sub-components
 export { default as FileUpload } from './components/chat-view/components/file-upload.svelte';
@@ -28,6 +29,13 @@ export { default as CanvasToolbar } from './components/canvas-view/components/ca
 export { default as CanvasHeader } from './components/canvas-view/components/canvas-header.svelte';
 export { default as CanvasSidebar } from './components/canvas-view/components/canvas-sidebar.svelte';
 export { default as CanvasSidebarNav } from './components/canvas-view/components/canvas-sidebar-nav.svelte';
+
+// Backlog view sub-components
+export { default as BacklogSidebar } from './components/backlog-view/components/backlog-sidebar.svelte';
+export { default as EpicCard } from './components/backlog-view/components/epic-card.svelte';
+export { default as StoryCard } from './components/backlog-view/components/story-card.svelte';
+export { default as ReleaseSwimLane } from './components/backlog-view/components/release-swim-lane.svelte';
+export { default as UnscheduledSwimLane } from './components/backlog-view/components/unscheduled-swim-lane.svelte';
 
 // Re-export specific UI components to avoid conflicts
 export { Button, buttonVariants } from './components/ui/button/index.js';
@@ -98,3 +106,35 @@ export type {
   CanvasObject,
   CanvasLayer
 } from './components/canvas-view/types/canvas.js';
+
+// Backlog view types and schemas
+export type {
+  Epic,
+  UserStory,
+  Release,
+  Sprint,
+  BacklogBoard,
+  BacklogViewProps,
+  EpicCardProps,
+  StoryCardProps,
+  ReleaseSwimLaneProps,
+  UnscheduledSwimLaneProps,
+  Priority,
+  Status,
+  WorkItemType,
+  DragEvent as BacklogDragEvent,
+  DragPosition as BacklogDragPosition
+} from './components/backlog-view/types/index.js';
+
+export {
+  EpicSchema,
+  UserStorySchema,
+  ReleaseSchema,
+  SprintSchema,
+  BacklogBoardSchema,
+  BacklogViewPropsSchema,
+  EpicFormSchema,
+  StoryFormSchema,
+  ReleaseFormSchema,
+  SprintFormSchema
+} from './components/backlog-view/schemas/backlog.js';
